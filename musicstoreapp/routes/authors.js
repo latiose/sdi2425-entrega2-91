@@ -42,6 +42,22 @@ module.exports = function(app) {
 
         res.send(response);
     });
+    app.get('/authors/filter/:role', function (req, res) {
+            let authors = [{
+                "name": "Pablo",
+                "group": "fito y los fitipaldis",
+                "role": "Cantante"
+            }, {
+                "name": "Pepe",
+                "group": "siniestro total",
+                "role": "Trompetista"
+            }, {
+                "name": "Juan",
+                "group": "estopa",
+                "role": "Saxofonista"
+            }].filter(author => author.role.toLowerCase().includes(req.params.role.toLowerCase()));
+        res.render("authors/authors.twig/", { authors: authors });
+    });
     app.get('/authors/*', function (req, res) {
         res.redirect("/authors")
     });
