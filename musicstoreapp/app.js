@@ -14,6 +14,12 @@ app.use(expressSession({
   resave: true,
   saveUninitialized: true
 }));
+let fileUpload = require('express-fileupload');
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+  createParentPath: true
+}));
+app.set('uploadPath', __dirname)
 
 let crypto = require('crypto');
 app.set('clave','abcdefg');
@@ -30,9 +36,18 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use('/', indexRouter);
+
+const userSessionRouter = require('./routes/userSessionRouter');
+const userAudiosRouter = require('./routes/userAudiosRouter');
+
+app.use("/songs/add",userSessionRouter);
+app.use("/publications",userSessionRouter);
+app.use("/audios/",userAudiosRouter);
+app.use("/shop/",userSessionRouter)
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
 const { MongoClient } = require("mongodb");
 const connectionStrings = "mongodb+srv://admin:sdi@musicstoreapp.1hrys.mongodb.net/?retryWrites=true&w=majority&appName=musicstoreapp";
 const dbClient = new MongoClient(connectionStrings);
@@ -43,12 +58,6 @@ require("./routes/authors.js")(app);
 const usersRepository = require("./repositories/usersRepository.js");
 usersRepository.init(app, dbClient);
 require("./routes/users.js")(app, usersRepository);
-let fileUpload = require('express-fileupload');
-app.use(fileUpload({
-  limits: { fileSize: 50 * 1024 * 1024 },
-  createParentPath: true
-}));
-app.set('uploadPath', __dirname)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
