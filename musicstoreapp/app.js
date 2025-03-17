@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 require("./routes/songs.js")(app);
+require("./routes/authors.js")(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
