@@ -19,7 +19,8 @@ module.exports = function(app) {
         res.render("authors/authors.twig", response);
     });
     app.get('/authors/add', function (req, res) {
-        res.render("authors/add.twig");
+        let roles = ["Cantante","Trompetista","Violinista","Saxofonista","Guitarrista" ];
+        res.render("authors/add.twig", { roles: roles });
     });
     app.post('/authors/add', function(req, res) {
         let response = "";
