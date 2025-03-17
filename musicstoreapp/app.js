@@ -25,6 +25,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 require("./routes/songs.js")(app);
+const { MongoClient } = require("mongodb");
+const connectionStrings = "mongodb+srv://admin:sdi@musicstoreapp.1hrys.mongodb.net/?retryWrites=true&w=majority&appName=musicstoreapp";
+const dbClient = new MongoClient(connectionStrings);
 require("./routes/authors.js")(app);
 
 // catch 404 and forward to error handler
