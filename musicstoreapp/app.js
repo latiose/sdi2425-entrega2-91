@@ -31,6 +31,12 @@ let songsRepository = require("./repositories/songsRepository.js");
 songsRepository.init(app, dbClient);
 require("./routes/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);
+let fileUpload = require('express-fileupload');
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+  createParentPath: true
+}));
+app.set('uploadPath', __dirname)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
