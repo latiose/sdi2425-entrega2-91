@@ -37,21 +37,48 @@ module.exports = function (app, favoriteSongsRepository, songsRepository) {
     });
 
 
-    app.get('/songs/favorites/delete/:song_id', function (req, res) {
-        let song_id = new ObjectId(req.params.song_id);
-        let filter = { song_id: song_id };
-        favoriteSongsRepository.findSong(filter, {}).then(song => {
-            favoriteSongsRepository.removeSong(filter, {}, function (result) {
-                if (result.error) {
-                    res.send("Error al borrar canción " + result.error);
-                } else {
-                    res.send({ message: 'Canción eliminada', songId: result.songId });
+
+        app.get('/songs/favorites/delete/:song_id', async function (req, res) {
+            try {
+
+                const song_id = new ObjectId(req.params.song_id);
+
+                const existingFavorite = await favoriteSongsRepository.findSong(
+                    { _id: song_id },
+                    {}
+                );
+
+                if (!existingFavorite) {
+                    return res.status(404).json({
+                        message: 'Favorite song not found'
+                    });
                 }
-            });
-        }).catch(err => {
-            res.send("Error al borrar canción " + err);
+
+                // Remove the song from favorites
+                const result = await favoriteSongsRepository.removeSong(
+                    { _id: song_id },
+                    {}
+                );
+
+                if (result.success) {
+                    res.json({
+                        message: 'Song removed from favorites',
+                        songId: song_id
+                    });
+                } else {
+                    res.status(500).json({
+                        message: 'Failed to remove song from favorites'
+                    });
+                }
+            } catch (error) {
+                console.error('Error deleting favorite song:', error);
+                res.status(500).json({
+                    message: 'Internal server error',
+                    error: error.message
+                });
+            }
         });
-    });
+
 
 
 }

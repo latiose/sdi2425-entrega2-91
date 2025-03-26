@@ -7,6 +7,17 @@ module.exports = {
         this.dbClient = dbClient;
         this.app = app;
     },
+    deleteSong: async function (filter, options) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const songsCollection = database.collection(this.collectionName);
+            const result = await songsCollection.deleteOne(filter, options);
+            return result;
+        } catch (error) {
+            throw (error);
+        }
+    },
         getSongs: async function (filter, options) {
         try {
             await this.dbClient.connect();
@@ -18,19 +29,7 @@ module.exports = {
             throw (error);
         }
     },
-    removeSong: async function (filter, options, callbackFunction) {
-        try {
-            await this.dbClient.connect();
-            const database = this.dbClient.db(this.database);
-            const songsCollection = database.collection(this.collectionName);
-            const result = await songsCollection.deleteOne(filter, options);
-            callbackFunction({ songId: result.deletedCount > 0 ? filter._id : null });
-            await this.dbClient.close();
-        } catch (err) {
-            callbackFunction({ error: err.message });
-        }
-    },
-        insertSong: function (song, callbackFunction) {
+    insertSong: function (song, callbackFunction) {
         this.dbClient.connect()
             .then(() => {
                 const database = this.dbClient.db(this.database);
@@ -41,6 +40,17 @@ module.exports = {
                     .catch(err => callbackFunction({error: err.message}));
             })
             .catch(err => callbackFunction({error: err.message}))
-    }
+    },
+    findSong: async function (filter, options) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const songsCollection = database.collection(this.collectionName);
+            const song = await songsCollection.findOne(filter, options);
+            return song;
+        } catch (error) {
+            throw (error);
+        }
+    },
 
 };

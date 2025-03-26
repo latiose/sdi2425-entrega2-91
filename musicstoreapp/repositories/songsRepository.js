@@ -6,6 +6,16 @@ module.exports = {
     init: function (app, dbClient) {
         this.dbClient = dbClient;
         this.app = app;
+    },deleteSong: async function (filter, options) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const songsCollection = database.collection(this.collectionName);
+            const result = await songsCollection.deleteOne(filter, options);
+            return result;
+        } catch (error) {
+            throw (error);
+        }
     },
     updateSong: async function(newSong, filter, options) {
         try {
@@ -51,6 +61,7 @@ module.exports = {
                     .catch(err => callbackFunction({error: err.message}));
             })
             .catch(err => callbackFunction({error: err.message}))
-    }
+    },
+
 
 };
