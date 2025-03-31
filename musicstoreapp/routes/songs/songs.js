@@ -229,7 +229,14 @@ module.exports = function(app,songsRepository) {
             res.send("Se ha producido un error al buscar la canción: " + error);
         });
     });
-
+    app.get('/error', function(req, res) {
+        let error = {
+            message: req.query.message,
+            status: req.query.status,
+            stack: req.query.stack
+        };
+        res.render('error', { error: error });
+    });
     app.get('/songs/:kind/:id', function(req, res) {
         let response = 'id: ' + req.params.id + '<br>'
             + 'Tipo de música: ' + req.params.kind;

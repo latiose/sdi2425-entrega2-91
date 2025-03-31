@@ -18,9 +18,9 @@ module.exports = function (app, usersRepository) {
           "?message=Nuevo usuario registrado"+
           "&messageType=alert-info ");
     }).catch(error => {
-      res.redirect("/users/signup" +
-          "?message=Se ha producido un error al registrar al usuario"+
-          "&messageType=alert-danger ");
+      res.redirect("error" +
+          "?message=Error al registrar al usuario"
+      );
     });
   });
   app.get('/users/login', function (req, res) {
@@ -37,18 +37,16 @@ module.exports = function (app, usersRepository) {
     usersRepository.findUser(filter, options).then(user => {
       if (user == null) {
         req.session.user = null;
-        res.redirect("/users/login" +
-            "?message=Email o password incorrecto"+
-            "&messageType=alert-danger ");
+        res.redirect('/error?message=Error al iniciar sesion');
       } else {
         req.session.user = user.email;
         res.redirect("/publications");
       }
     }).catch(error => {
       req.session.user = null;
-      res.redirect("/users/login" +
-          "?message=Se ha producido un error al buscar el usuario"+
-          "&messageType=alert-danger ");
+      res.redirect("error" +
+          "?message=Error al iniciar sesion"
+      );
     });
   });
   app.get('/users/logout', function (req, res) {
