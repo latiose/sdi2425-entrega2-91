@@ -207,10 +207,10 @@ module.exports = function(app,songsRepository) {
         });
     })
     app.get('/songs/:id', function (req, res) {
-        let filter = {_id: new ObjectId(req.params.id)};
-        let options = {};
+        let songId = new ObjectId(req.params.id);
         let authorOrBuyer = false;
-
+        let filter = {_id: songId};
+        let options = {};
         songsRepository.findSong(filter, options).then(song => {
             if (req.session.user && song.author === req.session.user) {
                 authorOrBuyer = true;
@@ -221,14 +221,26 @@ module.exports = function(app,songsRepository) {
                 if (purchasedIds && purchasedIds.length > 0) {
                     authorOrBuyer = true;
                 }
-                res.render("songs/song.twig", {song: song, authorOrBuyer: authorOrBuyer});
+                let settings = {
+                    url: "https://api.currencyapi.com/v3/latest?apikey=cur_live_g8ULxZ0z578mGFFvUF3KLX4W1gkoA5nfuEIg3VyY&base_currency=EUR&currencies=USD"
+                }
+                let rest = app.get("rest");
+                rest(settings, function (error, response, body) {
+                    console.log("cod: " + response.statusCode + " Cuerpo :" + body);
+                    let responseObject = JSON.parse(body);
+                    let rateUSD = responseObject.data.USD.value;
+                    // nuevo campo "usd" redondeado a dos decimales
+                    let songValue = song.price / rateUSD
+                    song.usd = Math.round(songValue * 100) / 100;
+                    res.render("songs/song.twig", {song: song, authorOrBuyer: authorOrBuyer});
+                })
+
             }).catch(error => {
-                res.send("Se ha producido un error al buscar las compras: " + error);
+                res.send("Se ha producido un error al buscar la canción " + error)
             });
-        }).catch(error => {
-            res.send("Se ha producido un error al buscar la canción: " + error);
         });
-    });
+    })
+
     app.get('/error', function(req, res) {
         let error = {
             message: req.query.message,
