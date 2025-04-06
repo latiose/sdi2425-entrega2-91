@@ -38,9 +38,12 @@ module.exports = function (app, usersRepository) {
     usersRepository.findUser(filter, options).then(user => {
       if (user == null) {
         req.session.user = null;
-        res.redirect('/error?message=Error al iniciar sesion');
+        res.redirect("/users/login" +
+            "?message=Email o password incorrecto" +
+            "&messageType=alert-danger ");
       } else {
         req.session.user = user.email;
+        req.session.role = user.role;
         res.redirect("/publications");
       }
     }).catch(error => {
