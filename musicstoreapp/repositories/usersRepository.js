@@ -1,7 +1,7 @@
 module.exports = {
     mongoClient: null,
     app: null,
-    database: "musicStore",
+    database: "gestorapp",
     collectionName: "users",
     init: function (app, dbClient) {
         this.dbClient = dbClient;
