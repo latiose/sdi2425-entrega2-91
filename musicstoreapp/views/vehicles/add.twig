@@ -1,0 +1,87 @@
+{% extends "layout.twig" %}
+{% block title %} Añadir vehículo {% endblock %}
+
+{% block main_container %}
+    <h2>Añadir nuevo vehículo</h2>
+
+    {% if errors.empty or errors.spaces or errors.error %}
+        <div class="alert alert-danger">
+            {% if errors.empty %}<p>{{ errors.empty }}</p>{% endif %}
+            {% if errors.spaces %}<p>{{ errors.spaces }}</p>{% endif %}
+            {% if errors.error %}<p>{{ errors.error }}</p>{% endif %}
+        </div>
+    {% endif %}
+
+    <form class="form-horizontal" method="post" action="/vehicles/add">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="numberPlate">Matrícula:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control {% if errors.numberPlate %}is-invalid{% endif %}"
+                       id="numberPlate" name="numberPlate"
+                       placeholder="Formato: 1234BCD o O1234AB"
+                       value="{{ numberPlate }}" required/>
+                {% if errors.numberPlate %}
+                    <div class="text-danger">{{ errors.numberPlate }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="vin">Número de bastidor:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control {% if errors.vin %}is-invalid{% endif %}"
+                       id="vin" name="vin" placeholder="17 caracteres"
+                       value="{{ vin }}" required/>
+                {% if errors.vin %}
+                    <div class="text-danger">{{ errors.vin }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="brand">Marca:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control"
+                       id="brand" name="brand" placeholder="Marca del vehículo"
+                       value="{{ brand }}" required/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="model">Modelo:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control"
+                       id="model" name="model" placeholder="Modelo del vehículo"
+                       value="{{ model }}" required/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="fuelType">Tipo de combustible:</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="fuelType" name="fuelType" required>
+                    <option value="">Seleccione tipo de combustible</option>
+                    <option value="Gasolina">Gasolina</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Microhíbrido">Microhíbrido</option>
+                    <option value="Híbrido">Híbrido</option>
+                    <option value="Eléctrico">Eléctrico</option>
+                    <option value="GLP">GLP</option>
+                    <option value="GNL">GNL</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Añadir vehículo</button>
+            </div>
+        </div>
+    </form>
+
+    {% if errors.existingVehicle %}
+        <div class="alert alert-danger mt-3">
+            {{ errors.existingVehicle }}
+        </div>
+    {% endif %}
+{% endblock %}

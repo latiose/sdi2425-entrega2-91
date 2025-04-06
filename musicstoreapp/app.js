@@ -79,6 +79,10 @@ favoriteSongsRepository.init(app, dbClient);
 let songsRepository = require("./repositories/songsRepository.js");
 songsRepository.init(app, dbClient);
 const usersRepository = require("./repositories/usersRepository.js");
+let vehiclesRepository = require("./repositories/vehiclesRepository.js")
+
+vehiclesRepository.init(app, dbClient);
+require("./routes/vehicles.js")(app, vehiclesRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/songsAPIv1.0.js")(app, songsRepository, usersRepository);
 require("./routes/songs/songs.js")(app,songsRepository);
