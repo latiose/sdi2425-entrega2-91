@@ -19,6 +19,9 @@ module.exports = {
         }
     },insertUser: async function (user) {
         try {
+            if (!user.role || !['ADMIN', 'EMPLOYEE'].includes(user.role)) {
+                user.role = 'EMPLOYEE';
+            }
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const usersCollection = database.collection(this.collectionName);

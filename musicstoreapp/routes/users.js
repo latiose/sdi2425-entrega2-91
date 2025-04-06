@@ -10,7 +10,8 @@ module.exports = function (app, usersRepository) {
         .update(req.body.password).digest('hex');
     let user = {
       email: req.body.email,
-      password: securePassword
+      password: securePassword,
+      role: req.body.role
     }
     //res.send('usuario registrado');
     usersRepository.insertUser(user).then(userId => {
