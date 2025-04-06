@@ -69,7 +69,7 @@ app.use("/songs/delete",userAuthorRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 const { MongoClient } = require("mongodb");
-const connectionStrings = "mongodb+srv://admin:sdi@musicstoreapp.1hrys.mongodb.net/?retryWrites=true&w=majority&appName=musicstoreapp";
+const connectionStrings = "mongodb+srv://admin:entrega2-91@gestorapp.xwdqnqn.mongodb.net/?retryWrites=true&w=majority&appName=gestorapp";
 const dbClient = new MongoClient(connectionStrings);
 let favoriteSongsRepository = require("./repositories/favoriteSongsRepository.js");
 favoriteSongsRepository.init(app, dbClient);
