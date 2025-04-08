@@ -24,27 +24,33 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
 
             const ongoingJourney = await journeysRepository.findOngoingJourneyByEmployee(employeeId);
             if (ongoingJourney) {
+                const vehicles = await vehiclesRepository.getAllVehicles();
                 errors.ongoingJourney = 'Error: ya tienes un trayecto en curso con otro vehículo';
                 res.render('journeys/add.twig', {
-                    errors: errors
+                    errors: errors,
+                    vehicles: vehicles
                 });
                 return;
             }
 
             const existingVehicle = await vehiclesRepository.findVehicleByNumberPlateOrVin(numberPlate);
             if (!existingVehicle) {
+                const vehicles = await vehiclesRepository.getAllVehicles();
                 errors.existingVehicle = 'Error: el vehículo no se encuentra en la base de datos';
                 res.render('journeys/add.twig', {
-                    errors: errors
+                    errors: errors,
+                    vehicles: vehicles
                 });
                 return;
             }
 
             const vehicleInUse = await journeysRepository.findOngoingJourneyByVehicle(existingVehicle._id);
             if (vehicleInUse) {
+                const vehicles = await vehiclesRepository.getAllVehicles();
                 errors.vehicleInUse = 'Error: el vehículo seleccionado ya está en uso por otro empleado';
                 res.render('journeys/add.twig', {
-                    errors: errors
+                    errors: errors,
+                    vehicles: vehicles
                 });
                 return;
             }
@@ -67,33 +73,41 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
 
             res.redirect('/journeys/vehicle/' + existingVehicle._id);
         } catch (error) {
+            const vehicles = await vehiclesRepository.getAllVehicles();
             errors.error = 'Error al registrar el inicio del trayecto: ' + error.message;
             res.render('journeys/add.twig', {
-                errors: errors
+                errors: errors,
+                vehicles: vehicles
             });
         }
     });
 
     app.get('/journeys/list', async function(req, res) {
         try {
-            const page = parseInt(req.query.page) || 1;
-            const limit = 5;
             const employeeId = req.session.user;
-
-            const journeys = await journeysRepository.getJourneysByEmployeePaginated(employeeId, page, limit);
-            const totalJourneys = await journeysRepository.countJourneysByEmployee(employeeId);
-            const totalPages = Math.ceil(totalJourneys / limit);
-
-            res.render('journeys/list.twig', {
-                journeys: journeys,
-                currentPage: page,
-                totalPages: totalPages,
-                hasPreviousPage: page > 1,
-                hasNextPage: page < totalPages
-            });
+            let filter = {employeeId: employeeId};
+            let page = parseInt(req.query.page) || 1; // Es String !!!
+            journeysRepository.getJourneysByEmployeePaginated(filter, {}, page).then(result => {
+                let lastPage = result.total / 4;
+                if (result.total % 4 > 0) { // Sobran decimales
+                    lastPage = lastPage + 1;
+                }
+                let pages = []; // paginas mostrar
+                for (let i = page - 2; i <= page + 2; i++) {
+                    if (i > 0 && i <= lastPage) {
+                        pages.push(i);
+                    }
+                }
+                res.render('journeys/list.twig', {
+                    journeys: result.journeys,
+                    pages: pages,
+                    currentPage: page
+                });
+            })
         } catch (error) {
             res.render('journeys/list.twig', {
                 errors: { error: 'Error al obtener los trayectos: ' + error.message }
+
             });
         }
     });

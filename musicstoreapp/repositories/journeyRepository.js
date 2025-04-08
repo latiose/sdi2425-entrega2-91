@@ -73,31 +73,22 @@ module.exports = {
         }
     },
 
-    getJourneysByEmployeePaginated: async function(employeeId, page, limit) {
+    getJourneysByEmployeePaginated: async function(filter, options, page) {
         try {
+            const limit = 4;
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const journeysCollection = database.collection(this.collectionName);
-            return await journeysCollection.find({ employeeId: employeeId })
-                .sort({ startDate: -1 })
-                .skip((page - 1) * limit)
-                .limit(limit)
-                .toArray();
+            const journeysCollectionCount = await journeysCollection.count();
+            const cursor = journeysCollection.find(filter, options).skip((page - 1) * limit).limit(limit)
+            const journeys = await cursor.toArray();
+            const result = {journeys: journeys, total: journeysCollectionCount};
+            return result;
         } catch (error) {
-            throw error;
+            throw (error);
         }
     },
 
-    countJourneysByEmployee: async function(employeeId) {
-        try {
-            await this.dbClient.connect();
-            const database = this.dbClient.db(this.database);
-            const journeysCollection = database.collection(this.collectionName);
-            return await journeysCollection.countDocuments({ employeeId: employeeId });
-        } catch (error) {
-            throw error;
-        }
-    },
 
     getJourneysByVehicle: async function(vehicleId) {
         try {
@@ -135,5 +126,7 @@ module.exports = {
         } catch (error) {
             throw error;
         }
-    }
+    },
+
+
 };
