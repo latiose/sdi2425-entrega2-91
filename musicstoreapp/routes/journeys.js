@@ -1,14 +1,16 @@
 module.exports = function(app, journeysRepository, vehiclesRepository) {
 
-    app.get('/journeys/add', async function (req, res) {
+    app.get('/journeys/add', async function(req, res) {
         try {
             const vehicles = await vehiclesRepository.getAllVehicles();
-            res.render("journeys/add.twig", {
+
+            res.render('journeys/add.twig', {
                 vehicles: vehicles
             });
         } catch (error) {
-            res.render("journeys/add.twig", {
-                errors: { error: 'Error al cargar los vehículos disponibles: ' + error.message }
+            res.render('journeys/add.twig', {
+                errors: { error: 'Error al cargar los vehículos: ' + error.message },
+                vehicles: []
             });
         }
     });
@@ -76,7 +78,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
         try {
             const page = parseInt(req.query.page) || 1;
             const limit = 5;
-            const employeeId = req.session.user._id;
+            const employeeId = req.session.user;
 
             const journeys = await journeysRepository.getJourneysByEmployeePaginated(employeeId, page, limit);
             const totalJourneys = await journeysRepository.countJourneysByEmployee(employeeId);
