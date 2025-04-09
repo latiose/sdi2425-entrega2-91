@@ -50,6 +50,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/', indexRouter);
 
+const addUserToViews = require('./middlewares/addUserToViews');
+app.use(addUserToViews);
+
 const userSessionRouter = require('./routes/userSessionRouter');
 
 const userAudiosRouter = require('./routes/userAudiosRouter');
@@ -68,6 +71,7 @@ app.use("/songs/delete",userAuthorRouter);
 
 const adminSessionRouter = require('./routes/adminSessionRouter');
 app.use("/vehicles/add", adminSessionRouter);
+app.use("/vehicles/list", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

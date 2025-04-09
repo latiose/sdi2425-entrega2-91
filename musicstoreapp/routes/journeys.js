@@ -55,7 +55,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
                 return;
             }
 
-            let odometerStart = 0;
+            let odometerStart = existingVehicle.mileage;
             const lastJourney = await journeysRepository.findLastJourneyByVehicle(existingVehicle._id);
             if (lastJourney && lastJourney.odometerEnd) {
                 odometerStart = lastJourney.odometerEnd;
@@ -69,7 +69,12 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
                 employeeId: employeeId
             };
 
-            await journeysRepository.insertJourney(journey);
+            await journeysRepository.insertJourney(journey)
+
+            await vehiclesRepository.updateVehicle(
+                { status: "OCUPADO", mileage: odometerStart },
+                { _id: existingVehicle._id }
+            );
 
             res.redirect('/journeys/vehicle/' + existingVehicle._id);
         } catch (error) {
