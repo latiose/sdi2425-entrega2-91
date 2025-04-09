@@ -45,5 +45,33 @@ module.exports = {
         } catch (error) {
             throw error;
         }
-    }
+    },
+
+    getVehiclesPaginated: async function(page) {
+        try {
+            const limit = 5;
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const vehiclesCollection = database.collection(this.collectionName);
+            const totalVehicles = await vehiclesCollection.countDocuments();
+            const cursor = vehiclesCollection.find({})
+                .skip((page - 1) * limit)
+                .limit(limit);
+            const vehicles = await cursor.toArray();
+            return { vehicles: vehicles, total: totalVehicles };
+        } catch (error) {
+            throw error;
+        }
+    },
+    updateVehicle: async function(vehicle, filter, options = {}) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const vehicleCollection = database.collection(this.collectionName);
+            const result = await vehicleCollection.updateOne(filter, {$set: vehicle}, options);
+            return result;
+        } catch (error) {
+            throw (error);
+        }
+    },
 };

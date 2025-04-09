@@ -68,6 +68,7 @@ app.use("/songs/delete",userAuthorRouter);
 
 const adminSessionRouter = require('./routes/adminSessionRouter');
 app.use("/vehicles/add", adminSessionRouter);
+app.use("/vehicles/list", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

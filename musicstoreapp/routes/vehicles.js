@@ -13,7 +13,9 @@ module.exports = function(app, vehiclesRepository) {
             vin: req.body.vin?.trim(),
             brand: req.body.brand?.trim(),
             model: req.body.model?.trim(),
-            fuelType: req.body.fuelType?.trim()
+            fuelType: req.body.fuelType?.trim(),
+            mileage: 0,
+            status: "LIBRE"
         };
         let errors = {};
 
@@ -72,6 +74,33 @@ module.exports = function(app, vehiclesRepository) {
                     errors: errors,
                     validFuelTypes: validFuelTypes
                 });
+        }
+    });
+
+    app.get('/vehicles/list', async function(req, res) {
+        let page = parseInt(req.query.page) || 1;
+        try {
+            const result = await vehiclesRepository.getVehiclesPaginated(page);
+
+            let lastPage = Math.ceil(result.total / 5);
+            if (result.total % 4 > 0) {
+                lastPage = lastPage + 1;
+            }
+            let pages = [];
+            for (let i = page - 2; i <= page + 2; i++) {
+                if (i > 0 && i <= lastPage) {
+                    pages.push(i);
+                }
+            }
+            res.render("vehicles/list.twig", {
+                vehicles: result.vehicles,
+                pages: pages,
+                currentPage: page
+            });
+        } catch (error) {
+            res.render("vehicles/list.twig", {
+                errors: {error: "Se ha producido un error al listar los vehículos: " + error.message}
+            });
         }
     });
 

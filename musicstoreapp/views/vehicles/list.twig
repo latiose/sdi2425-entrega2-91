@@ -1,0 +1,60 @@
+{% extends "layout.twig" %}
+{% block title %} Vehículos {% endblock %}
+
+{% block main_container %}
+    <div class="row">
+        <h2>Lista de vehículos</h2>
+
+        {% if errors %}
+            <div class="alert alert-danger">
+                <p>{{ errors.error }}</p>
+            </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nº Bastidor</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Combustible</th>
+                    <th>Kilometraje</th>
+                    <th>Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.numberPlate }}</td>
+                        <td>{{ vehicle.vin }}</td>
+                        <td>{{ vehicle.brand }}</td>
+                        <td>{{ vehicle.model }}</td>
+                        <td>{{ vehicle.fuelType }}</td>
+                        <td>{{ vehicle.mileage }} km</td>
+                        <td>
+                        <span class="badge {% if vehicle.status == 'LIBRE' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ vehicle.status }}
+                        </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row text-center">
+            <ul class="pagination">
+                {% for page in pages %}
+                    <li class="page-item" id="pi-{{ page }}">
+                        <a class="page-link" href="/vehicles/list?page={{ page }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+                <script>
+                    $("#pi-" + "{{ currentPage }}").addClass("active");
+                </script>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
