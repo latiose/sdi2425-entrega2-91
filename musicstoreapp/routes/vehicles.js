@@ -2,7 +2,9 @@
 const validFuelTypes = ['Gasolina', 'Diesel', 'Microhíbrido',
     'Híbrido', 'Eléctrico', 'GLP', 'GNL'];
 
-module.exports = function(app, vehiclesRepository) {
+const { ObjectId } = require('mongodb');
+
+module.exports = function(app, vehiclesRepository, journeyRepository) {
 
     app.get('/vehicles/add', function (req, res) {
         res.render("vehicles/add.twig");
@@ -101,6 +103,27 @@ module.exports = function(app, vehiclesRepository) {
             res.render("vehicles/list.twig", {
                 errors: {error: "Se ha producido un error al listar los vehículos: " + error.message}
             });
+        }
+    });
+
+    app.post('/vehicles/delete', async function(req, res) {
+        try {
+            let vehicleIds = req.body.selectedVehicles;
+            vehicleIds = Array.isArray(vehicleIds) ? vehicleIds : [vehicleIds];
+
+            vehicleIds = vehicleIds.map(id => new ObjectId(id));
+
+            if (!vehicleIds || vehicleIds.length === 0) {
+                return res.redirect('/vehicles/list?message=Seleccione al menos un vehículo');
+            }
+
+            await journeyRepository.deleteMany({ vehicleId: { $in: vehicleIds } });
+            await vehiclesRepository.deleteMany({ _id: { $in: vehicleIds }});
+
+            return res.redirect('/vehicles/list?message=Vehículos eliminados con éxito');
+        } catch (error) {
+            console.log("Error in delete operation:", error);
+            res.status(500).redirect('/vehicles/list?message=Error al eliminar los vehículos');
         }
     });
 
