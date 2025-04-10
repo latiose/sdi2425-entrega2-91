@@ -11,39 +11,46 @@
             </div>
         {% endif %}
 
-        <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead>
-                <tr>
-                    <th>Matrícula</th>
-                    <th>Nº Bastidor</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Combustible</th>
-                    <th>Kilometraje</th>
-                    <th>Estado</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for vehicle in vehicles %}
+        <form id="delete-form" method="post" action="/vehicles/delete">
+            <button type="submit" class="btn btn-danger mb-3" id="deleteButton">
+                Eliminar
+            </button>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
                     <tr>
-                        <td>{{ vehicle.numberPlate }}</td>
-                        <td>{{ vehicle.vin }}</td>
-                        <td>{{ vehicle.brand }}</td>
-                        <td>{{ vehicle.model }}</td>
-                        <td>{{ vehicle.fuelType }}</td>
-                        <td>{{ vehicle.mileage }} km</td>
-                        <td>
-                        <span class="badge {% if vehicle.status == 'LIBRE' %}bg-success{% else %}bg-warning{% endif %}">
-                            {{ vehicle.status }}
-                        </span>
-                        </td>
+                        <th>Matrícula</th>
+                        <th>Nº Bastidor</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Combustible</th>
+                        <th>Kilometraje</th>
+                        <th>Estado</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
+                    </thead>
+                    <tbody>
+                    {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ vehicle.numberPlate }}</td>
+                            <td>{{ vehicle.vin }}</td>
+                            <td>{{ vehicle.brand }}</td>
+                            <td>{{ vehicle.model }}</td>
+                            <td>{{ vehicle.fuelType }}</td>
+                            <td>{{ vehicle.mileage }} km</td>
+                            <td>
+                                <span class="badge {% if vehicle.status == 'LIBRE' %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ vehicle.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="selectedVehicles" value="{{ vehicle._id }}" class="vehicle-checkbox">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
         <div class="row text-center">
             <ul class="pagination">
                 {% for page in pages %}

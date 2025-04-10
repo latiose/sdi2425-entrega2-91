@@ -44,7 +44,7 @@ module.exports = function (app, usersRepository) {
       } else {
         req.session.user = user.email;
         req.session.role = user.role;
-        res.redirect("/publications");
+        res.redirect("/journeys/list");
       }
     }).catch(error => {
       req.session.user = null;
@@ -54,8 +54,12 @@ module.exports = function (app, usersRepository) {
     });
   });
   app.get('/users/logout', function (req, res) {
-    req.session.user = null;
-    res.send("El usuario se ha desconectado correctamente");
+    req.session.destroy(err => {
+      if (err) {
+        console.log("Error: " + err);
+      }
+      res.redirect("/users/login");
+    });
   })
 
 }

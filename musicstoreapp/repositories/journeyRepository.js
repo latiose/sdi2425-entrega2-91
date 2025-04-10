@@ -127,6 +127,14 @@ module.exports = {
             throw error;
         }
     },
-
-
+    deleteMany: async function(filter) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const journeysCollection = database.collection(this.collectionName);
+            return await journeysCollection.deleteMany(filter);
+        } catch(error) {
+            throw error;
+        }
+    },
 };

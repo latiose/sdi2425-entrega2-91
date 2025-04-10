@@ -87,7 +87,7 @@ let vehiclesRepository = require("./repositories/vehiclesRepository.js")
 let journeysRepository = require("./repositories/journeyRepository.js")
 vehiclesRepository.init(app, dbClient);
 journeysRepository.init(app,dbClient)
-require("./routes/vehicles.js")(app, vehiclesRepository);
+require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/songsAPIv1.0.js")(app, songsRepository, usersRepository);
