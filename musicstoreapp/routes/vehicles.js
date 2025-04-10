@@ -66,8 +66,7 @@ module.exports = function(app, vehiclesRepository, journeyRepository) {
             }
 
             await vehiclesRepository.insertVehicle(vehicle);
-            // res.redirect('/vehicles'); cuando esté hecho el ejercicio
-            res.send("Vehículo '" + vehicle.vin + "' registrado correctamente");
+            res.redirect('/vehicles/list');
 
         } catch (error) {
             errors.error = 'Error al guardar el vehículo: ' + error.message;
