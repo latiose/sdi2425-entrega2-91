@@ -20,6 +20,19 @@ module.exports = {
         }
     },
 
+
+    findJourney: async function (filter, options) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const journeysCollection = database.collection(this.collectionName);
+            const journey = await journeysCollection.findOne(filter, options);
+            return journey;
+        } catch (error) {
+            throw (error);
+        }
+    },
+
     getAllJourneys: async function() {
         try {
             await this.dbClient.connect();
@@ -103,7 +116,7 @@ module.exports = {
         }
     },
 
-    completeJourney: async function(journeyId, odometerEnd) {
+    completeJourney: async function(journeyId, odometerEnd,comments) {
         try {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
@@ -119,7 +132,8 @@ module.exports = {
                     $set: {
                         endDate: endDate,
                         odometerEnd: odometerEnd,
-                        duration: duration
+                        duration: duration,
+                        comments: comments
                     }
                 }
             );
