@@ -1,20 +1,31 @@
 package com.uniovi.sdi2425entrega2test.n;
 
+import com.uniovi.sdi2425entrega2test.n.pageobjects.PO_HomeView;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.springframework.transaction.annotation.Transactional;
+import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Transactional
 class Sdi2425Entrega2TestApplicationTests {
-    //static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-    //static String Geckodriver = "C:\\Path\\geckodriver-v0.30.0-win64.exe";
+    static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+    static String Geckodriver = "geckodriver.exe";
     //static String Geckodriver = "C:\\Dev\\tools\\selenium\\geckodriver-v0.30.0-win64.exe";
-    static String Geckodriver = "/Users/delacal/Documents/SDI/geckodriver-v0.30.0-macos";
-    static String PathFirefox = "/Applications/Firefox.app/Contents/MacOS/firefox-bin";
+    //static String Geckodriver = "/Users/delacal/Documents/SDI/geckodriver-v0.30.0-macos";
+    //static String PathFirefox = "/Applications/Firefox.app/Contents/MacOS/firefox-bin";
 //static String Geckodriver = "/Users/USUARIO/selenium/geckodriver-v0.30.0-macos";
 //Común a Windows y a MACOSX
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
@@ -115,10 +126,189 @@ class Sdi2425Entrega2TestApplicationTests {
     /* ---- Probamos a obtener lista de canciones sin token ---- */
     @Test
     @Order(11)
-    public void PR11() {
+    public void PRApiRestTest() {
         final String RestAssuredURL = "http://localhost:8081/api/v1.0/songs";
         Response response = RestAssured.get(RestAssuredURL);
         Assertions.assertEquals(403, response.getStatusCode());
+    }
+
+    @Test
+    @Order(11)
+    @Transactional
+    public void PR011() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCL", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diesel");
+        String checkText = "1234BCL";
+        PO_ListView.searchThroughPages(driver, checkText);
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(12)
+    @Transactional
+    public void PR012A() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/vehicle/add"));
+    }
+
+    @Test
+    @Order(13)
+    @Transactional
+    public void PR012B() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/vehicle/add"));
+    }
+
+    @Test
+    @Order(14)
+    @Transactional
+    public void PR012C() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "ASDFGHJKLQWERTYUI", "", "Corolla", "Diésel");
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/vehicle/add"));
+    }
+
+    @Test
+    @Order(15)
+    @Transactional
+    public void PR012D() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "ASDFGHJKLQWERTYUI", "Toyota", "", "Diésel");
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/vehicle/add"));
+    }
+
+    @Test
+    @Order(16)
+    @Transactional
+    public void PR013() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "123", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.addvehicle.plate.invalid",
+                PO_Properties.getSPANISH());
+
+        String checkText = PO_HomeView.getP().getString("Error.addvehicle.plate.invalid",
+                PO_Properties.getSPANISH());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(17)
+    @Transactional
+    public void PR014A() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCF", "ASDFGHJKLQWERTYUII", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.vin.length",
+                PO_Properties.getSPANISH());
+
+        String checkText = PO_HomeView.getP().getString("Error.vin.length",
+                PO_Properties.getSPANISH());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(18)
+    @Transactional
+    public void PR014B() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCF", "ASDFGHJKLQWERTYU", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.vin.length",
+                PO_Properties.getSPANISH());
+
+        String checkText = PO_HomeView.getP().getString("Error.vin.length",
+                PO_Properties.getSPANISH());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(19)
+    @Transactional
+    public void PR015() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.plate.duplicate",
+                PO_Properties.getSPANISH());
+
+        String checkText = PO_HomeView.getP().getString("Error.plate.duplicate",
+                PO_Properties.getSPANISH());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(20)
+    @Transactional
+    public void PR016() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BGD", "0FAFP08192R123456", "Toyota", "Corolla", "Diésel");
+
+        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.vin.duplicate",
+                PO_Properties.getSPANISH());
+
+        String checkText = PO_HomeView.getP().getString("Error.vin.duplicate",
+                PO_Properties.getSPANISH());
+        Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
     @Test
