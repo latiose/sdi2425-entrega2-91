@@ -86,13 +86,13 @@ module.exports = {
         }
     },
 
-    getJourneysByEmployeePaginated: async function(filter, options, page) {
+    getJourneysPaginated: async function(filter, options, page) {
         try {
-            const limit = 4;
+            const limit = 5;
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const journeysCollection = database.collection(this.collectionName);
-            const journeysCollectionCount = await journeysCollection.count();
+            const journeysCollectionCount = await journeysCollection.countDocuments(filter);
             const cursor = journeysCollection.find(filter, options).skip((page - 1) * limit).limit(limit)
             const journeys = await cursor.toArray();
             const result = {journeys: journeys, total: journeysCollectionCount};

@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 
-module.exports = function(app, journeysRepository, vehiclesRepository) {
+module.exports = function(app, journeysRepository, vehiclesRepository,usersRepository) {
 
     app.get('/journeys/add', async function(req, res) {
         try {
@@ -38,7 +38,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
                 });
             }
 
-            if (journey.employeeId !== req.session.user) {
+            if (journey.employeeId !== req.session.userId) {
                 return res.render('journeys/end.twig', {
                     errors: { error: 'No tienes permiso para finalizar este trayecto' }
                 });
@@ -58,7 +58,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
             let id = req.body._id;
             let comments = req.body.comments || '';
             let odometer = parseInt(req.body.odometerEnd);
-            let employeeId = req.session.user;
+            const employeeId = req.session.userId;
 
             let filter = {
                 _id: new ObjectId(id),
@@ -105,7 +105,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
         let errors = {};
 
         try {
-            const employeeId = req.session.user;
+            const employeeId = req.session.userId;
 
             const ongoingJourney = await journeysRepository.findOngoingJourneyByEmployee(employeeId);
             if (ongoingJourney) {
@@ -134,12 +134,21 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
                 odometerStart = lastJourney.odometerEnd;
             }
 
+            let employee = await usersRepository.findUser({ _id: new ObjectId(employeeId) });
+
+            if (!employee) {
+                const vehicles = await vehiclesRepository.getAllVehicles();
+                errors.employee = 'Error: no se ha podido recuperar el usuario actual';
+                return res.render('journeys/add.twig', { errors, vehicles });
+            }
+
             let journey = {
                 startDate: new Date(),
                 odometerStart: odometerStart,
                 vehicleId: new ObjectId(existingVehicle._id),
                 vehiclePlate: numberPlate,
-                employeeId: employeeId
+                employeeId: employeeId,
+                driverName: employee.name || employee.email //borrar luego lo del email
             };
 
             await journeysRepository.insertJourney(journey);
@@ -160,20 +169,20 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
 
     app.get('/journeys/list', async function(req, res) {
         try {
-            const employeeId = req.session.user;
+            const employeeId = req.session.userId;
             let filter = { employeeId };
             let page = parseInt(req.query.page) || 1;
-            journeysRepository.getJourneysByEmployeePaginated(filter, {}, page).then(result => {
-                let lastPage = result.total / 4;
-                if (result.total % 4 > 0) lastPage += 1;
-
+            journeysRepository.getJourneysPaginated(filter, {}, page).then(result => {
+                let lastPage = Math.ceil(result.total / 5);
+                if (result.total % 5 === 0 && result.total > 0) {
+                    lastPage = result.total / 5;
+                }
                 let pages = [];
-                for (let i = page - 2; i <= page + 2; i++) {
+                for (let i = page - 1; i <= page + 1; i++) {
                     if (i > 0 && i <= lastPage) {
                         pages.push(i);
                     }
                 }
-
                 res.render('journeys/list.twig', {
                     journeys: result.journeys,
                     pages,
@@ -190,9 +199,28 @@ module.exports = function(app, journeysRepository, vehiclesRepository) {
     app.get('/journeys/vehicle/:id', async function(req, res) {
         try {
             const vehicleId = req.params.id;
-            const journeys = await journeysRepository.getJourneysByVehicle(new ObjectId(vehicleId));
-
-            res.render('journeys/vehicle.twig', { journeys });
+            const vehicles = await vehiclesRepository.getAllVehicles();
+            let filter = { vehicleId: new ObjectId(vehicleId) };
+            let page = parseInt(req.query.page) || 1;
+            await journeysRepository.getJourneysPaginated(filter, {}, page).then(result => {
+                let lastPage = Math.ceil(result.total / 5);
+                if (result.total % 5 === 0 && result.total > 0) {
+                    lastPage = result.total / 5;
+                }
+                let pages = [];
+                for (let i = page - 1; i <= page + 1; i++) {
+                    if (i > 0 && i <= lastPage) {
+                        pages.push(i);
+                    }
+                }
+                res.render('journeys/vehicle.twig', {
+                    vehicles: vehicles,
+                    journeys: result.journeys,
+                    pages,
+                    currentPage: page,
+                    currentVehicleId: vehicleId
+                });
+            });
         } catch (error) {
             res.render('journeys/vehicle.twig', {
                 errors: { error: 'Error al obtener los trayectos del vehículo: ' + error.message }

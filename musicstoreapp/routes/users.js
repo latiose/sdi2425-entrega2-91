@@ -44,6 +44,7 @@ module.exports = function (app, usersRepository) {
       } else {
         req.session.user = user.email;
         req.session.role = user.role;
+        req.session.userId = user._id;
         res.redirect("/journeys/list");
       }
     }).catch(error => {
