@@ -1,22 +1,23 @@
 package com.uniovi.sdi2425entrega2test.n;
 
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import org.json.simple.JSONObject;
+import com.uniovi.sdi2425entrega2test.n.pageobjects.PO_HomeView;
+import com.uniovi.sdi2425entrega2test.n.pageobjects.PO_LoginView;
+import com.uniovi.sdi2425entrega2test.n.pageobjects.PO_PrivateView;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.junit.jupiter.api.*;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Sdi2425Entrega2TestApplicationTests {
-    //static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-    //static String Geckodriver = "C:\\Path\\geckodriver-v0.30.0-win64.exe";
-    //static String Geckodriver = "C:\\Dev\\tools\\selenium\\geckodriver-v0.30.0-win64.exe";
-    static String Geckodriver = "/Users/delacal/Documents/SDI/geckodriver-v0.30.0-macos";
-    static String PathFirefox = "/Applications/Firefox.app/Contents/MacOS/firefox-bin";
-//static String Geckodriver = "/Users/USUARIO/selenium/geckodriver-v0.30.0-macos";
-//Común a Windows y a MACOSX
+    static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+    static String Geckodriver = "geckodriver.exe";
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
     static String URL = "http://localhost:8081";
 
@@ -50,69 +51,13 @@ class Sdi2425Entrega2TestApplicationTests {
         driver.quit();
     }
 
-    @Test
-    @Order(1)
-    void PR01() {
-        Assertions.assertTrue(true, "PR01 sin hacer");
-    }
 
-    @Test
-    @Order(2)
-    public void PR02() {
-        Assertions.assertTrue(false, "PR02 sin hacer");
-    }
-
-    @Test
-    @Order(3)
-    public void PR03() {
-        Assertions.assertTrue(false, "PR03 sin hacer");
-    }
-
-    @Test
-    @Order(4)
-    public void PR04() {
-        Assertions.assertTrue(false, "PR04 sin hacer");
-    }
-
-    @Test
-    @Order(5)
-    public void PR05() {
-        Assertions.assertTrue(false, "PR05 sin hacer");
-    }
-
-    @Test
-    @Order(6)
-    public void PR06() {
-        Assertions.assertTrue(false, "PR06 sin hacer");
-    }
-
-    @Test
-    @Order(7)
-    public void PR07() {
-        Assertions.assertTrue(false, "PR07 sin hacer");
-    }
-
-    @Test
-    @Order(8)
-    public void PR08() {
-        Assertions.assertTrue(false, "PR08 sin hacer");
-    }
-
-    @Test
-    @Order(9)
-    public void PR09() {
-        Assertions.assertTrue(false, "PR09 sin hacer");
-    }
-
-    @Test
-    @Order(10)
-    public void PR10() {
-        Assertions.assertTrue(false, "PR10 sin hacer");
-    }
 
 
     /* Ejemplos de pruebas de llamada a una API-REST */
-    /* ---- Probamos a obtener lista de canciones sin token ---- */
+    /* ---- Probamos a obtener lista de canciones sin token ---- *
+    /* estos dos venian hechos ns si servirán de algo
+
     @Test
     @Order(11)
     public void PR11() {
@@ -136,5 +81,29 @@ class Sdi2425Entrega2TestApplicationTests {
         Response response = request.post(RestAssuredURL);
         //4. Comprobamos que el servicio ha tenido exito
         Assertions.assertEquals(200, response.getStatusCode());
+    }
+
+     */
+
+
+
+    @Test
+    @Order(28)
+    @Transactional
+    public void PR024() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de trayectos","text","Ver trayectos");
+        List<WebElement> rows = driver.findElements(By.xpath("//table[@id='journeyTable']/tbody/tr"));
+        List<String> matriculasEsperadas = List.of("9101GHJ", "5678DFG", "3141MNP");
+        for (WebElement row : rows) {
+            List<WebElement> cells = row.findElements(By.tagName("td"));
+            if (!cells.isEmpty()) {
+                String matricula = cells.get(1).getText();
+                assertTrue(matriculasEsperadas.contains(matricula));
+            }
+        }
+        PO_LoginView.logOut(driver);
     }
 }
