@@ -10,8 +10,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.Rollback;
 import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,14 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Transactional
 class Sdi2425Entrega2TestApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
     static String Geckodriver = "geckodriver.exe";
-    //static String Geckodriver = "C:\\Dev\\tools\\selenium\\geckodriver-v0.30.0-win64.exe";
-    //static String Geckodriver = "/Users/delacal/Documents/SDI/geckodriver-v0.30.0-macos";
-    //static String PathFirefox = "/Applications/Firefox.app/Contents/MacOS/firefox-bin";
-//static String Geckodriver = "/Users/USUARIO/selenium/geckodriver-v0.30.0-macos";
 //Común a Windows y a MACOSX
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
     static String URL = "http://localhost:8081";
@@ -135,13 +132,14 @@ class Sdi2425Entrega2TestApplicationTests {
     @Test
     @Order(11)
     @Transactional
+    @Rollback
     public void PR011() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
-        PO_PrivateView.fillFormAddVehicle(driver, "1234BCL", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diesel");
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCL", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
         String checkText = "1234BCL";
         PO_ListView.searchThroughPages(driver, checkText);
         List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
@@ -150,7 +148,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(12)
-    @Transactional
     public void PR012A() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -167,7 +164,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(13)
-    @Transactional
     public void PR012B() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -184,7 +180,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(14)
-    @Transactional
     public void PR012C() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -201,7 +196,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(15)
-    @Transactional
     public void PR012D() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -218,7 +212,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(16)
-    @Transactional
     public void PR013() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -237,7 +230,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(17)
-    @Transactional
     public void PR014A() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -256,7 +248,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(18)
-    @Transactional
     public void PR014B() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -275,7 +266,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(19)
-    @Transactional
     public void PR015() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -294,7 +284,6 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(20)
-    @Transactional
     public void PR016() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");

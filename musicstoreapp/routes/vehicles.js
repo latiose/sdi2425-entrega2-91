@@ -1,5 +1,5 @@
 
-const validFuelTypes = ['Gasolina', 'Diesel', 'Microhíbrido',
+const validFuelTypes = ['Gasolina', 'Diésel', 'Microhíbrido',
     'Híbrido', 'Eléctrico', 'GLP', 'GNL'];
 
 const { ObjectId } = require('mongodb');
@@ -7,7 +7,9 @@ const { ObjectId } = require('mongodb');
 module.exports = function(app, vehiclesRepository, journeyRepository) {
 
     app.get('/vehicles/add', function (req, res) {
-        res.render("vehicles/add.twig");
+        res.render("vehicles/add.twig", {
+            validFuelTypes: validFuelTypes
+        });
     })
     app.post('/vehicles/add', async function(req, res) {
         let vehicle = {

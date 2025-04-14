@@ -76,8 +76,10 @@ app.use("/vehicles/list", adminSessionRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 const { MongoClient } = require("mongodb");
-const connectionStrings = "mongodb+srv://admin:entrega2-91@gestorapp.xwdqnqn.mongodb.net/?retryWrites=true&w=majority&appName=gestorapp";
+const connectionStrings = "mongodb://localhost:27017/gestorapp";
 const dbClient = new MongoClient(connectionStrings);
+const initializeDatabase = require('./config/initDatabase');
+
 let favoriteSongsRepository = require("./repositories/favoriteSongsRepository.js");
 favoriteSongsRepository.init(app, dbClient);
 let songsRepository = require("./repositories/songsRepository.js");
@@ -95,6 +97,15 @@ require("./routes/songs/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);
 usersRepository.init(app, dbClient);
 require("./routes/users.js")(app, usersRepository);
+
+(async () => {
+  try {
+    await initializeDatabase(dbClient);
+    console.log("Database initialized successfully with sample data");
+  } catch (err) {
+    console.error("Failed to initialize database:", err);
+  }
+})();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
