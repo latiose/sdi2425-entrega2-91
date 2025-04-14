@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Sdi2425Entrega2TestApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
     static String Geckodriver = "geckodriver.exe";
-//Común a Windows y a MACOSX
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
     static String URL = "http://localhost:8081";
 
@@ -38,6 +37,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @BeforeEach
     public void setUp() {
         driver.navigate().to(URL);
+        RestAssured.post("http://localhost:8081/api/test/reset");
     }
 
     //Después de cada prueba se borran las cookies del navegador
