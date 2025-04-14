@@ -1,16 +1,14 @@
-
+const { ObjectId } = require('mongodb');
 const initializeDatabase = require('../../config/initDatabase');
+
 module.exports = function (app, client) {
     app.post("/api/test/reset", async (req, res) => {
         try {
-            const db = client.db();
-            await db.collection("users").deleteMany({});
-            await db.collection("vehicles").deleteMany({});
-            await db.collection("journeys").deleteMany({});
-            await initializeDatabase();
+            await initializeDatabase(client);
             res.status(200).send("Database reset.");
         } catch (e) {
-            res.status(500).send("Error reseteando la BD.");
+            console.error("Error resetting database:", e);
+            res.status(500).send("Error resetting the database.");
         }
     });
-}
+};
