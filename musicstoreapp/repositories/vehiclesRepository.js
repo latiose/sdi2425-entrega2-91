@@ -63,15 +63,15 @@ module.exports = {
             throw error;
         }
     },
-    updateVehicle: async function(vehicle, filter, options = {}) {
+    updateVehicle: async function(filter, update, options = {}) {
         try {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const vehicleCollection = database.collection(this.collectionName);
-            const result = await vehicleCollection.updateOne(filter, {$set: vehicle}, options);
+            const result = await vehicleCollection.updateOne(filter, update, options);
             return result;
         } catch (error) {
-            throw (error);
+            throw error;
         }
     },
     deleteMany: async function(filter) {

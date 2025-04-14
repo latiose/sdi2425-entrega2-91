@@ -38,21 +38,23 @@
                     </td>
                     <td>
                         {% if journey.endDate %}
-                            {% set duration = journey.endDate.getTime() - journey.startDate.getTime() %}
-                            {% set hours = (duration / (60 * 60 * 1000)) | round(0, 'floor') %}
-                            {% set minutes = ((duration % (60 * 60 * 1000)) / (60 * 1000)) | round(0, 'floor') %}
-                            {{ hours }}h {{ minutes }}m
+                            {% set durationMinutes = journey.duration|default(0) %}
+                            {% set hours = (durationMinutes / 60)|round(2) %}
+                            {% set wholeHours = hours|round(0, 'floor') %}
+                            {% set decimalMinutes = (hours - wholeHours) * 60 %}
+                            {% set displayMinutes = decimalMinutes|round(0) %}
+                            {{ wholeHours }}h {{ displayMinutes }}m
                         {% else %}
                             En progreso
                         {% endif %}
                     </td>
                     <td>
                         {% if not journey.endDate %}
-                            <form method="post" action="/journeys/end/{{ journey._id }}">
+                            <form method="get" action="/journeys/end/{{ journey._id }}">
                                 <button type="submit" class="btn btn-sm btn-primary">Finalizar</button>
                             </form>
                         {% endif %}
-                        <a href="/journeys/{{ journey._id }}" class="btn btn-sm btn-info">Detalles</a>
+                        <a href="/journeys/vehicle/{{ journey._id }}" class="btn btn-sm btn-info">Detalles</a>
                     </td>
                 </tr>
             {% endfor %}

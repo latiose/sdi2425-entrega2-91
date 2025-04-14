@@ -1,0 +1,45 @@
+{% extends "layout.twig" %}
+{% block title %} Finalizar trayecto {% endblock %}
+
+{% block main_container %}
+    <h2>Finalizar trayecto</h2>
+
+    {% if errors %}
+        <div class="alert alert-danger">
+            {% for key, error in errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form class="form-horizontal" method="post" action="/journeys/end">
+        <input type="hidden" name="_id" value="{{ journey._id }}">
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="odometerEnd">Valor final del odómetro:</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control"
+                       id="odometerEnd" name="odometerEnd"
+                       placeholder="{{ journey.odometerStart }}"
+                       min="{{ journey.odometerStart }}"
+                       value="" required/>
+                {% if errors.odometer %}
+                    <div class="text-danger">{{ errors.odometer }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="comments">Observaciones:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" id="comments" name="comments" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Finalizar trayecto</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
