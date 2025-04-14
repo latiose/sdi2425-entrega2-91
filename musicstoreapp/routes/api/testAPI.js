@@ -1,9 +1,9 @@
 
 const initializeDatabase = require('../../config/initDatabase');
-module.exports = function (app, songsRepository,usersRepository,journeysRepository) {
+module.exports = function (app, client) {
     app.post("/api/test/reset", async (req, res) => {
         try {
-            const db = dbClient.db();
+            const db = client.db();
             await db.collection("users").deleteMany({});
             await db.collection("vehicles").deleteMany({});
             await db.collection("journeys").deleteMany({});

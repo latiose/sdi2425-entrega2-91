@@ -92,7 +92,7 @@ require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/songsAPIv1.0.js")(app, songsRepository, usersRepository);
-require("./routes/api/testAPI.js")(app, songsRepository, usersRepository,journeysRepository);
+require("./routes/api/testAPI.js")(app, dbClient);
 require("./routes/songs/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);
 usersRepository.init(app, dbClient);
