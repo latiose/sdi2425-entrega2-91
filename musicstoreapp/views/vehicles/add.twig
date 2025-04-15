@@ -76,7 +76,9 @@
 
     {% if errors.existingVehicle %}
         <div class="alert alert-danger mt-3">
-            {{ errors.existingVehicle }}
+            {% for error in errors.existingVehicle %}
+                <p>{{ error }}</p>
+            {% endfor %}
         </div>
     {% endif %}
 {% endblock %}
