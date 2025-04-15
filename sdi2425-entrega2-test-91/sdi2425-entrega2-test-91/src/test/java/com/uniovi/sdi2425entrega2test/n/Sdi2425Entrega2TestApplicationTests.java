@@ -322,6 +322,47 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
     @Test
+    @Order(25)
+    @Transactional
+    public void PR021() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        boolean found = PO_ListView.deleteVehiclesByIndexes(driver, new int[]{0});
+        assertFalse(found, "El vehículo no se ha eliminado correctamente.");
+    }
+
+    @Test
+    @Order(26)
+    @Transactional
+    public void PR022() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"delete-form\"]/div/table/tbody/tr"));
+        PO_ListView.goToLastPage(driver);
+        boolean found = PO_ListView.deleteVehiclesByIndexes(driver, new int[]{vehicleRows.size() - 1});
+        assertFalse(found, "El vehículo no se ha eliminado correctamente.");
+    }
+
+    @Test
+    @Order(27)
+    @Transactional
+    public void PR023() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        boolean found = PO_ListView.deleteVehiclesByIndexes(driver, new int[]{0, 1, 2});
+        assertFalse(found, "Los vehículos no se han eliminado correctamente.");
+    }
+
+    @Test
     @Order(38)
     public void PR38() {
         final String RestAssuredURL = "http://localhost:8081/api/v1.0/users/login";
