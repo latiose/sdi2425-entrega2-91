@@ -303,6 +303,25 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
     @Test
+    @Order(24)
+    public void PR020() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        int totalCount = 0;
+        boolean next = true;
+        while (next) {
+            List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"delete-form\"]/div/table/tbody/tr"));
+            totalCount += vehicleRows.size();
+            next = PO_ListView.goToNextPage(driver);
+        }
+
+        Assertions.assertEquals(19, totalCount, "El número de vehículos no coincide.");
+    }
+
+    @Test
     @Order(38)
     public void PR38() {
         final String RestAssuredURL = "http://localhost:8081/api/v1.0/users/login";
