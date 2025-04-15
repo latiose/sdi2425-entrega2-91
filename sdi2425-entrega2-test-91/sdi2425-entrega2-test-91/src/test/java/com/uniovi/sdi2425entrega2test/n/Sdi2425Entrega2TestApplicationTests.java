@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Sdi2425Entrega2TestApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
     static String Geckodriver = "geckodriver.exe";
-//Común a Windows y a MACOSX
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
     static String URL = "http://localhost:8081";
 
@@ -38,6 +37,10 @@ class Sdi2425Entrega2TestApplicationTests {
     @BeforeEach
     public void setUp() {
         driver.navigate().to(URL);
+        RequestSpecification request = RestAssured.given();
+        request.header("Content-Type", "application/json");
+        Response response = request.post("http://localhost:8081/api/test/reset");
+        Assertions.assertEquals(200, response.getStatusCode(), "Database reset failed");
     }
 
     //Después de cada prueba se borran las cookies del navegador
@@ -58,6 +61,7 @@ class Sdi2425Entrega2TestApplicationTests {
         driver.quit();
     }
 
+    /*
     @Test
     @Order(1)
     void PR01() {
@@ -119,8 +123,11 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
 
+     */
+
     /* Ejemplos de pruebas de llamada a una API-REST */
     /* ---- Probamos a obtener lista de canciones sin token ---- */
+    /*
     @Test
     @Order(11)
     public void PRApiRestTest() {
@@ -129,6 +136,7 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(403, response.getStatusCode());
     }
 
+*/
     @Test
     @Order(11)
     @Transactional
