@@ -69,6 +69,7 @@ app.use("/songs/edit",userAuthorRouter);
 app.use("/songs/delete",userAuthorRouter);
 
 const adminSessionRouter = require('./routes/adminSessionRouter');
+app.use("/users/signup", adminSessionRouter);
 app.use("/vehicles/add", adminSessionRouter);
 app.use("/vehicles/list", adminSessionRouter);
 

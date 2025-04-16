@@ -6,17 +6,20 @@ module.exports = function (app, usersRepository) {
     res.render("signup.twig");
   })
   app.post('/users/signup', function (req, res) {
+    let password = generarContrasena(12);
     let securePassword = app.get("crypto").createHmac('sha256', app.get('clave'))
-        .update(req.body.password).digest('hex');
+        .update(password).digest('hex');
     let user = {
-      email: req.body.email,
+      dni: req.body.dni,
+      name: req.body.name,
+      surname: req.body.surname,
       password: securePassword,
-      role: req.body.role
+      role: "STANDARD"
     }
     //res.send('usuario registrado');
     usersRepository.insertUser(user).then(userId => {
       res.redirect("/users/login" +
-          "?message=Nuevo usuario registrado"+
+          "?message=Nuevo usuario registrado. Password: " + password +
           "&messageType=alert-info ");
     }).catch(error => {
       res.redirect("error" +
@@ -31,7 +34,7 @@ module.exports = function (app, usersRepository) {
     let securePassword = app.get('crypto').createHmac('sha256', app.get('clave'))
         .update(req.body.password).digest('hex');
     let filter = {
-      email: req.body.email,
+      dni: req.body.dni,
       password: securePassword
     };
     let options = {};
@@ -39,10 +42,12 @@ module.exports = function (app, usersRepository) {
       if (user == null) {
         req.session.user = null;
         res.redirect("/users/login" +
-            "?message=Email o password incorrecto" +
+            "?message=Dni o password incorrecto" +
             "&messageType=alert-danger ");
       } else {
-        req.session.user = user.email;
+        req.session.user = user.dni;
+        req.session.name = user.name;
+        req.session.surname = user.surname;
         req.session.role = user.role;
         req.session.userId = user._id;
         res.redirect("/journeys/list");
@@ -61,6 +66,29 @@ module.exports = function (app, usersRepository) {
       }
       res.redirect("/users/login");
     });
-  })
+  });
+
+  function generarContrasena(longitud = 12) {
+    const mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const minusculas = "abcdefghijklmnopqrstuvwxyz";
+    const numeros = "0123456789";
+    const especiales = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+    const todo = mayusculas + minusculas + numeros + especiales;
+
+
+    let contrasena = "";
+    contrasena += mayusculas[Math.floor(Math.random() * mayusculas.length)];
+    contrasena += minusculas[Math.floor(Math.random() * minusculas.length)];
+    contrasena += numeros[Math.floor(Math.random() * numeros.length)];
+    contrasena += especiales[Math.floor(Math.random() * especiales.length)];
+
+    for (let i = contrasena.length; i < longitud; i++) {
+      contrasena += todo[Math.floor(Math.random() * todo.length)];
+    }
+
+    contrasena = contrasena.split('').sort(() => Math.random() - 0.5).join('');
+    return contrasena;
+  }
 
 }
