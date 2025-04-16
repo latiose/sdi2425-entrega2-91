@@ -38,7 +38,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                 });
             }
 
-            if (journey.employeeId !== req.session.userId) {
+            if (journey.employeeId.toString() !== req.session.userId) {
                 return res.render('journeys/end.twig', {
                     errors: { error: 'No tienes permiso para finalizar este trayecto' }
                 });
@@ -63,8 +63,9 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
             let filter = {
                 _id: new ObjectId(id),
                 endDate: { $exists: false },
-                employeeId: employeeId
+                employeeId: new ObjectId(employeeId)
             };
+
 
             const journey = await journeysRepository.findJourney(filter, {});
             if (!journey) {
@@ -147,8 +148,8 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                 odometerStart: odometerStart,
                 vehicleId: new ObjectId(existingVehicle._id),
                 vehiclePlate: numberPlate,
-                employeeId: employeeId,
-                driverName: employee.name || employee.email //borrar luego lo del email
+                employeeId: new ObjectId(employeeId),
+                driverName: employee.dni
             };
 
             await journeysRepository.insertJourney(journey);
@@ -170,7 +171,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
     app.get('/journeys/list', async function(req, res) {
         try {
             const employeeId = req.session.userId;
-            let filter = { employeeId };
+            let filter = { employeeId: new ObjectId(employeeId) };
             let page = parseInt(req.query.page) || 1;
             journeysRepository.getJourneysPaginated(filter, {}, page).then(result => {
                 let lastPage = Math.ceil(result.total / 5);

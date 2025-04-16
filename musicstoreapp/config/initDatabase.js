@@ -1,4 +1,5 @@
 const {ObjectId} = require("mongodb");
+const crypto = require('crypto');
 
 module.exports = async function initializeDatabase(client) {
     try {
@@ -9,11 +10,43 @@ module.exports = async function initializeDatabase(client) {
 
         const usersCollection = db.collection("users");
         await usersCollection.deleteMany({});
-        await usersCollection.insertMany([
-            { _id: new ObjectId("67f2c812ed40ed1fc1b2fa2b"), email: "admin@sdi.com", password: "ebd5359e500475700c6cc3dd4af89cfd0569aa31724a1bf10ed1e3019dcfdb11", role: "ADMIN" },
-            { _id: new ObjectId("67f2c818ed40ed1fc1b2fa2c"), email: "prueba1@prueba1.com", password: "57420b1f0b1e2d07e407a04ff8bbc205a57b3055b34ed94658c04ed38f62daa7", role: "EMPLOYEE" },
-            { _id: new ObjectId("67f2ce1f46e0db74e048d5a7"), email: "prueba2@prueba2.com", password: "767b99cac9736794a079924ea108fc3614754c2c44d10f57c9a8d490018f0fdc", role: "EMPLOYEE" }
-        ]);
+
+        const clave = "abcdefg";
+        const letrasDni = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+        function calcularLetraDNI(numero) {
+            return letrasDni[numero % 23];
+        }
+
+        function hashPassword(password, clave) {
+            return crypto.createHmac('sha256', clave).update(password).digest('hex');
+        }
+        const adminId = new ObjectId();
+        const users = [
+            {
+                _id: adminId,
+                dni: "12345678Z",
+                password: hashPassword("@Dm1n1str@D0r", clave),
+                role: "ADMIN"
+            }
+        ];
+
+        for (let i = 1; i <= 15; i++) {
+            const numDni = 10000000 + i;
+            const letra = calcularLetraDNI(numDni);
+            const dni = `${numDni}${letra}`;
+            const plainPassword = `Us3r@${i}-PASSW`;
+            const user = {
+                _id: new ObjectId(),
+                dni: dni,
+                password: hashPassword(plainPassword, clave),
+                role: "EMPLOYEE"
+            };
+            users.push(user);
+        }
+
+
+        await usersCollection.insertMany(users);
         console.log("Users initialized");
 
         const vehiclesCollection = db.collection("vehicles");
@@ -805,8 +838,20 @@ module.exports = async function initializeDatabase(client) {
                 "odometerEnd": 117015
             }
         ]);
-        console.log("Journeys initialized");
 
+        const journeysToUpdate = await journeysCollection.find({}).toArray();
+
+        for (const journey of journeysToUpdate) {
+            await journeysCollection.updateOne(
+                { _id: journey._id },
+                {
+                    $set: {
+                        driverName: "12345678Z",
+                        employeeId: adminId,
+                    }
+                }
+            );
+        }
     } catch (error) {
         console.error("Error initializing database:", error);
     }

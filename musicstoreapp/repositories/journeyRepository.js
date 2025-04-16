@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 module.exports = {
     mongoClient: null,
     app: null,
@@ -49,15 +50,15 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const journeysCollection = database.collection(this.collectionName);
+            const empId = typeof employeeId === 'string' ? new ObjectId(employeeId) : employeeId;
             return await journeysCollection.findOne({
-                employeeId: employeeId,
+                employeeId: empId,
                 endDate: { $exists: false }
             });
         } catch (error) {
             throw error;
         }
     },
-
     findOngoingJourneyByVehicle: async function(vehicleId) {
         try {
             await this.dbClient.connect();

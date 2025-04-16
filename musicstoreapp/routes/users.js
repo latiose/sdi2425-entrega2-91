@@ -14,7 +14,7 @@ module.exports = function (app, usersRepository) {
       name: req.body.name,
       surname: req.body.surname,
       password: securePassword,
-      role: "STANDARD"
+      role: "EMPLOYEE"
     }
     //res.send('usuario registrado');
     usersRepository.insertUser(user).then(userId => {
@@ -54,6 +54,10 @@ module.exports = function (app, usersRepository) {
       }
     }).catch(error => {
       req.session.user = null;
+      req.session.name = null;
+      req.session.surname = null;
+      req.session.role = null
+      req.session.userId = null;
       res.redirect("error" +
           "?message=Error al iniciar sesion"
       );
