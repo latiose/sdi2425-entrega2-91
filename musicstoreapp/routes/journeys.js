@@ -19,29 +19,21 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
             const journeyId = req.params.id;
 
             if (!journeyId) {
-                return res.render('journeys/end.twig', {
-                    errors: { error: 'ID de trayecto no proporcionado' }
-                });
+                return res.redirect('/journeys/list');
             }
 
             const journey = await journeysRepository.findJourney({ _id: new ObjectId(journeyId) }, {});
 
             if (!journey) {
-                return res.render('journeys/end.twig', {
-                    errors: { error: 'El trayecto no existe' }
-                });
+                return res.redirect('/journeys/list');
             }
 
             if (journey.endDate) {
-                return res.render('journeys/end.twig', {
-                    errors: { error: 'Este trayecto ya ha sido finalizado' }
-                });
+                return res.redirect('/journeys/list');
             }
 
             if (journey.employeeId.toString() !== req.session.userId) {
-                return res.render('journeys/end.twig', {
-                    errors: { error: 'No tienes permiso para finalizar este trayecto' }
-                });
+                return res.redirect('/journeys/list');
             }
 
             res.render('journeys/end.twig', { journey });
@@ -169,6 +161,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
     });
 
     app.get('/journeys/list', async function(req, res) {
+
         try {
             const employeeId = req.session.userId;
             let filter = { employeeId: new ObjectId(employeeId) };
@@ -198,22 +191,43 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
     });
 
     app.get('/journeys/vehicle/:id', async function(req, res) {
-        try {
-            const vehicleId = req.params.id;
-            const vehicles = await vehiclesRepository.getAllVehicles();
-            let filter = { vehicleId: new ObjectId(vehicleId) };
-            let page = parseInt(req.query.page) || 1;
-            await journeysRepository.getJourneysPaginated(filter, {}, page).then(result => {
-                let lastPage = Math.ceil(result.total / 5);
-                if (result.total % 5 === 0 && result.total > 0) {
-                    lastPage = result.total / 5;
+            try {
+                const vehicles = await vehiclesRepository.getAllVehicles();
+                if (vehicles.length === 0) {
+                    return res.render('journeys/vehicle.twig', {
+                        errors: { error: 'No hay vehículos disponibles.' }
+                    });
                 }
-                let pages = [];
-                for (let i = page - 1; i <= page + 1; i++) {
-                    if (i > 0 && i <= lastPage) {
-                        pages.push(i);
+
+                let vehicleId = req.params.id;
+                // First verify if it's a valid ObjectId
+                if (!ObjectId.isValid(vehicleId)) {
+                    vehicleId = vehicles[0]._id.toString();
+                } else {
+                    const exists = vehicles.some(v => v._id.toString() === vehicleId);
+                    if (!exists) {
+                        vehicleId = vehicles[0]._id.toString();
                     }
                 }
+
+                // Convert to ObjectId when passing to the filter
+                let filter = { vehicleId: new ObjectId(vehicleId) };
+                let page = parseInt(req.query.page) || 1;
+
+                const result = await journeysRepository.getJourneysPaginated(filter, {}, page);
+            let lastPage = Math.ceil(result.total / 5);
+            if (result.total % 5 === 0 && result.total > 0) {
+                lastPage = result.total / 5;
+            }
+
+            let pages = [];
+            for (let i = page - 1; i <= page + 1; i++) {
+                if (i > 0 && i <= lastPage) {
+                    pages.push(i);
+                }
+            }
+
+
                 res.render('journeys/vehicle.twig', {
                     vehicles: vehicles,
                     journeys: result.journeys,
@@ -221,7 +235,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                     currentPage: page,
                     currentVehicleId: vehicleId
                 });
-            });
+
         } catch (error) {
             res.render('journeys/vehicle.twig', {
                 errors: { error: 'Error al obtener los trayectos del vehículo: ' + error.message }

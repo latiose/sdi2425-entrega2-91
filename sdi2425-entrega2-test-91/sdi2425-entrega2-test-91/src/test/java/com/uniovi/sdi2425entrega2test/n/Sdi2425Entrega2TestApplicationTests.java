@@ -10,12 +10,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.test.annotation.Rollback;
 import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,69 +65,7 @@ class Sdi2425Entrega2TestApplicationTests {
         driver.quit();
     }
 
-    /*
-    @Test
-    @Order(1)
-    void PR01() {
-        Assertions.assertTrue(true, "PR01 sin hacer");
-    }
 
-    @Test
-    @Order(2)
-    public void PR02() {
-        Assertions.assertTrue(false, "PR02 sin hacer");
-    }
-
-    @Test
-    @Order(3)
-    public void PR03() {
-        Assertions.assertTrue(false, "PR03 sin hacer");
-    }
-
-    @Test
-    @Order(4)
-    public void PR04() {
-        Assertions.assertTrue(false, "PR04 sin hacer");
-    }
-
-    @Test
-    @Order(5)
-    public void PR05() {
-        Assertions.assertTrue(false, "PR05 sin hacer");
-    }
-
-    @Test
-    @Order(6)
-    public void PR06() {
-        Assertions.assertTrue(false, "PR06 sin hacer");
-    }
-
-    @Test
-    @Order(7)
-    public void PR07() {
-        Assertions.assertTrue(false, "PR07 sin hacer");
-    }
-
-    @Test
-    @Order(8)
-    public void PR08() {
-        Assertions.assertTrue(false, "PR08 sin hacer");
-    }
-
-    @Test
-    @Order(9)
-    public void PR09() {
-        Assertions.assertTrue(false, "PR09 sin hacer");
-    }
-
-    @Test
-    @Order(10)
-    public void PR10() {
-        Assertions.assertTrue(false, "PR10 sin hacer");
-    }
-
-
-     */
 
     /* Ejemplos de pruebas de llamada a una API-REST */
     /* ---- Probamos a obtener lista de canciones sin token ---- */
@@ -363,8 +305,212 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
     @Test
-    @Order(38)
-    public void PR38() {
+    @Order(28)
+    public void PR024() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        List<WebElement> rows = driver.findElements(By.xpath("//table[@id='journeyTable']/tbody/tr"));
+        List<String> matriculasEsperadas = List.of("6543NRG", "Z0032BY", "4567CRD","1234BCD");
+        for (WebElement row : rows) {
+            List<WebElement> cells = row.findElements(By.tagName("td"));
+            if (!cells.isEmpty()) {
+                String matricula = cells.get(1).getText();
+                assertTrue(matriculasEsperadas.contains(matricula));
+            }
+        }
+        PO_LoginView.logOut(driver);
+    }
+
+    @Test
+    @Order(29)
+    public void PR025() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S", "Us3r@1-PASSW");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Agregar Trayecto");
+
+        WebElement dropdown = driver.findElement(By.id("numberPlate"));
+        Select select = new Select(dropdown);
+        select.selectByValue("4567CRD");
+
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        List<WebElement> errorMessages = driver.findElements(By.className("alert-danger"));
+        assertTrue(errorMessages.isEmpty());
+
+    }
+
+    @Test
+    @Order(30)
+    public void PR026() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Agregar Trayecto");
+
+        WebElement dropdown = driver.findElement(By.id("numberPlate"));
+        Select select = new Select(dropdown);
+        select.selectByValue("4567CRD");
+
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        List<WebElement> errorMessages = driver.findElements(By.className("alert-danger"));
+        assertFalse(errorMessages.isEmpty());
+        assertTrue(errorMessages.get(0).getText().contains("Error: ya tienes un trayecto en curso con otro vehículo"));
+    }
+
+    @Test
+    @Order(31)
+    @Transactional
+    public void PR027() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000002Q", "Us3r@2-PASSW");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Agregar Trayecto");
+
+        WebElement dropdown = driver.findElement(By.id("numberPlate"));
+        Select select = new Select(dropdown);
+        select.selectByValue("1234BCD");
+
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        List<WebElement> errorMessages = driver.findElements(By.className("alert-danger"));
+        assertFalse(errorMessages.isEmpty());
+        assertTrue(errorMessages.get(0).getText().contains("Error: el vehículo seleccionado ya está en uso por otro empleado"));
+    }
+
+
+    @Test
+    @Order(32)
+    public void PR028() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        driver.get("http://localhost:8081/journeys/list?page=11");
+        List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
+
+        for (WebElement row : rows) {
+            if (row.getText().contains("1234BCD")) {
+                List<WebElement> finishButtons = row.findElements(By.xpath(".//form/button[contains(text(),'Finalizar')]"));
+                if (!finishButtons.isEmpty()) {
+                    finishButtons.get(0).click();
+                    break;
+                }
+            }
+        }
+        WebElement odometerEndField = driver.findElement(By.id("odometerEnd"));
+        odometerEndField.clear();
+        odometerEndField.sendKeys("55000000000");
+
+        WebElement commentsField = driver.findElement(By.id("comments"));
+        commentsField.clear();
+        commentsField.sendKeys("Finalización del trayecto");
+
+        WebElement submitButton = driver.findElement(By.xpath("//button[@type='submit' and contains(text(),'Finalizar trayecto')]"));
+        submitButton.click();
+
+        List<WebElement> errorMessages = driver.findElements(By.className("alert-danger"));
+        assertTrue(errorMessages.isEmpty());
+    }
+
+
+    @Test
+    @Order(33)
+    @Transactional
+    public void PR029() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        driver.get("http://localhost:8081/journeys/list?page=11");
+        List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
+
+        for (WebElement row : rows) {
+            if (row.getText().contains("1234BCD")) {
+                List<WebElement> finishButtons = row.findElements(By.xpath(".//form/button[contains(text(),'Finalizar')]"));
+                if (!finishButtons.isEmpty()) {
+                    finishButtons.get(0).click();
+                    break;
+                }
+            }
+        }
+
+        WebElement odometerEndField = driver.findElement(By.id("odometerEnd"));
+        odometerEndField.clear();
+
+        WebElement submitButton = driver.findElement(By.xpath("//button[@type='submit' and contains(text(),'Finalizar')]"));
+        submitButton.click();
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/end"));
+
+    }
+
+    @Test
+    @Order(34)
+    @Transactional
+    public void PR030() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        driver.get("http://localhost:8081/journeys/list?page=11");
+        List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
+
+        for (WebElement row : rows) {
+            if (row.getText().contains("1234BCD")) {
+                List<WebElement> finishButtons = row.findElements(By.xpath(".//form/button[contains(text(),'Finalizar')]"));
+                if (!finishButtons.isEmpty()) {
+                    finishButtons.get(0).click();
+                    break;
+                }
+            }
+        }
+
+        WebElement odometerEndField = driver.findElement(By.id("odometerEnd"));
+        odometerEndField.clear();
+        odometerEndField.sendKeys("-5");
+
+        WebElement submitButton = driver.findElement(By.xpath("//button[@type='submit' and contains(text(),'Finalizar')]"));
+        submitButton.click();
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/end"));
+    }
+
+    @Test
+    @Order(35)
+    @Transactional
+    public void PR031() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000002Q","Us3r@2-PASSW");
+
+        List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
+
+        for (WebElement row : rows) {
+            List<WebElement> finalizarLinks = row.findElements(By.xpath(".//td/a[contains(text(),'Finalizar')]"));
+            assertTrue(finalizarLinks.isEmpty());
+        }
+
+        driver.navigate().to("http://localhost:8081/journeys/end/67ffd1bbf117290500b7e9ef?");
+
+        new WebDriverWait(driver, 10).until(ExpectedConditions.urlContains("/journeys/list"));
+        //nos devuelve a list si no existe ninguno en curso
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/journeys/list"));
+    }
+
+    @Test
+    @Order(32)
+    public void PR032() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Historial de trayectos de un vehículo");
+
+        List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
+
+        Assertions.assertEquals(5, rows.size());
+
+    }
+
+    @Test
+    @Order(37)
+    public void PR33() {
         final String RestAssuredURL = "http://localhost:8081/api/v1.0/users/login";
         //2. Preparamos el parámetro en formato JSON
         RequestSpecification request = RestAssured.given();

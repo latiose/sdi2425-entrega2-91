@@ -17,7 +17,10 @@
                 <select class="form-control" id="numberPlate" name="numberPlate" onchange="changeVehicle()" required>
                     <option value="">-- Seleccione una matrícula --</option>
                     {% for vehicle in vehicles %}
-                        <option value="{{ vehicle._id }}">{{ vehicle.numberPlate }} - {{ vehicle.brand }} {{ vehicle.model }}</option>
+                        <option value="{{ vehicle._id }}"
+                                {% if vehicle._id == currentVehicleId %}selected{% endif %}>
+                            {{ vehicle.numberPlate }} - {{ vehicle.brand }} {{ vehicle.model }}
+                        </option>
                     {% endfor %}
                 </select>
                 {% if errors.numberPlate %}
@@ -88,11 +91,10 @@
             }
         }
         document.addEventListener('DOMContentLoaded', function() {
-            const urlPath = window.location.pathname;
-            const vehicleId = urlPath.split('/journeys/vehicle/')[1];
+            const vehicleId = "{{ currentVehicleId }}";
             if (vehicleId) {
                 const selectElement = document.getElementById('numberPlate');
-                if (selectElement) {
+                if (selectElement && selectElement.value !== vehicleId) {
                     selectElement.value = vehicleId;
                 }
             }

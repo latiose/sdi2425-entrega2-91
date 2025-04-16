@@ -836,7 +836,16 @@ module.exports = async function initializeDatabase(client) {
                 "duration": 2.1,
                 "endDate": new Date("2025-03-23T14:21:00.332639Z"),
                 "odometerEnd": 117015
-            }
+            },
+            {
+                "startDate": new Date("2025-03-23T12:15:00.332639Z"),
+                "odometerStart": 116941,
+                "vehicleId": new ObjectId("67f78bfbeb4480ef31b369f4"),
+                "vehiclePlate": "1234BCD",
+                "employeeId": "67f2c812ed40ed1fc1b2fa2b",
+                "driverName": "prueba1@prueba1.com",
+            },
+
         ]);
 
         const journeysToUpdate = await journeysCollection.find({}).toArray();
