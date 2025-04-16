@@ -9,16 +9,25 @@ module.exports = {
         this.app = app;
     },
 
-    findVehicleByNumberPlateOrVin: async function(numberPlate, vin) {
+    findVehicleByNumberPlate: async function(numberPlate) {
         try {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const vehiclesCollection = database.collection(this.collectionName);
             return await vehiclesCollection.findOne({
-                $or: [
-                    { numberPlate: numberPlate },
-                    { vin: vin }
-                ]
+                numberPlate: numberPlate
+            });
+        } catch (error) {
+            throw error;
+        }
+    },
+    findVehicleByVin: async function(vin) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const vehiclesCollection = database.collection(this.collectionName);
+            return await vehiclesCollection.findOne({
+                vin: vin
             });
         } catch (error) {
             throw error;

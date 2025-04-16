@@ -158,81 +158,80 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(12)
     public void PR012A() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
 
         List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
         assertFalse(requiredFieldErrors.isEmpty());
         String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/vehicle/add"));
+        assertTrue(currentUrl.contains("/vehicles/add"));
     }
 
     @Test
     @Order(13)
     public void PR012B() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "", "Toyota", "Corolla", "Diésel");
 
         List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
         assertFalse(requiredFieldErrors.isEmpty());
         String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/vehicle/add"));
+        assertTrue(currentUrl.contains("/vehicles/add"));
     }
 
     @Test
     @Order(14)
     public void PR012C() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "ASDFGHJKLQWERTYUI", "", "Corolla", "Diésel");
 
         List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
         assertFalse(requiredFieldErrors.isEmpty());
         String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/vehicle/add"));
+        assertTrue(currentUrl.contains("/vehicles/add"));
     }
 
     @Test
     @Order(15)
     public void PR012D() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "ASDFGHJKLQWERTYUI", "Toyota", "", "Diésel");
 
         List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
         assertFalse(requiredFieldErrors.isEmpty());
         String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/vehicle/add"));
+        assertTrue(currentUrl.contains("/vehicles/add"));
     }
 
     @Test
     @Order(16)
     public void PR013() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "123", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
 
-        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.addvehicle.plate.invalid",
-                PO_Properties.getSPANISH());
+        String checkText = "Formato de matrícula inválido: La matrícula debe de seguir un formato válido Español";
 
-        String checkText = PO_HomeView.getP().getString("Error.addvehicle.plate.invalid",
-                PO_Properties.getSPANISH());
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
@@ -240,17 +239,16 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(17)
     public void PR014A() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "1234BCF", "ASDFGHJKLQWERTYUII", "Toyota", "Corolla", "Diésel");
 
-        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.vin.length",
-                PO_Properties.getSPANISH());
+        String checkText = "El número de bastidor debe contener exactamente 17 caracteres";
 
-        String checkText = PO_HomeView.getP().getString("Error.vin.length",
-                PO_Properties.getSPANISH());
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
@@ -258,17 +256,16 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(18)
     public void PR014B() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "1234BCF", "ASDFGHJKLQWERTYU", "Toyota", "Corolla", "Diésel");
 
-        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.vin.length",
-                PO_Properties.getSPANISH());
+        String checkText = "El número de bastidor debe contener exactamente 17 caracteres";
 
-        String checkText = PO_HomeView.getP().getString("Error.vin.length",
-                PO_Properties.getSPANISH());
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
@@ -276,17 +273,16 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(19)
     public void PR015() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
         PO_PrivateView.fillFormAddVehicle(driver, "1234BCD", "ASDFGHJKLQWERTYUI", "Toyota", "Corolla", "Diésel");
 
-        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.plate.duplicate",
-                PO_Properties.getSPANISH());
+        String checkText = "Matrícula ya registrada en el sistema.";
 
-        String checkText = PO_HomeView.getP().getString("Error.plate.duplicate",
-                PO_Properties.getSPANISH());
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
@@ -294,18 +290,76 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(20)
     public void PR016() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
 
-        PO_PrivateView.goThroughNav(driver,"text","Gestión de vehículos","text","Agregar vehículo");
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
-        PO_PrivateView.fillFormAddVehicle(driver, "1234BGD", "0FAFP08192R123456", "Toyota", "Corolla", "Diésel");
+        PO_PrivateView.fillFormAddVehicle(driver, "1234BCP", "ASDFGHJKLQWERTYUA", "Toyota", "Corolla", "Diésel");
 
-        List<WebElement> result = PO_PrivateView.checkElementByKey(driver, "Error.vin.duplicate",
-                PO_Properties.getSPANISH());
+        String checkText = "Número de bastidor ya registrado en el sistema.";
 
-        String checkText = PO_HomeView.getP().getString("Error.vin.duplicate",
-                PO_Properties.getSPANISH());
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(24)
+    public void PR020() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        int totalCount = 0;
+        boolean next = true;
+        while (next) {
+            List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"delete-form\"]/div/table/tbody/tr"));
+            totalCount += vehicleRows.size();
+            next = PO_ListView.goToNextPage(driver);
+        }
+
+        Assertions.assertEquals(19, totalCount, "El número de vehículos no coincide.");
+    }
+
+    @Test
+    @Order(25)
+    @Transactional
+    public void PR021() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        boolean found = PO_ListView.deleteVehiclesByIndexes(driver, new int[]{0});
+        assertFalse(found, "El vehículo no se ha eliminado correctamente.");
+    }
+
+    @Test
+    @Order(26)
+    @Transactional
+    public void PR022() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"delete-form\"]/div/table/tbody/tr"));
+        PO_ListView.goToLastPage(driver);
+        boolean found = PO_ListView.deleteVehiclesByIndexes(driver, new int[]{vehicleRows.size() - 1});
+        assertFalse(found, "El vehículo no se ha eliminado correctamente.");
+    }
+
+    @Test
+    @Order(27)
+    @Transactional
+    public void PR023() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        boolean found = PO_ListView.deleteVehiclesByIndexes(driver, new int[]{0, 1, 2});
+        assertFalse(found, "Los vehículos no se han eliminado correctamente.");
     }
 
     @Test
