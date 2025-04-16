@@ -58,7 +58,6 @@ const userSessionRouter = require('./routes/userSessionRouter');
 const userAudiosRouter = require('./routes/userAudiosRouter');
 const userTokenRouter = require('./routes/userTokenRouter');
 app.use("/api/v1.0/songs/", userTokenRouter);
-
 app.use("/songs/add",userSessionRouter);
 app.use("/publications",userSessionRouter);
 app.use("/songs/buy",userSessionRouter);
@@ -70,14 +69,17 @@ app.use("/songs/edit",userAuthorRouter);
 app.use("/songs/delete",userAuthorRouter);
 
 const adminSessionRouter = require('./routes/adminSessionRouter');
+app.use("/users/signup", adminSessionRouter);
 app.use("/vehicles/add", adminSessionRouter);
 app.use("/vehicles/list", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 const { MongoClient } = require("mongodb");
-const connectionStrings = "mongodb+srv://admin:entrega2-91@gestorapp.xwdqnqn.mongodb.net/?retryWrites=true&w=majority&appName=gestorapp";
+const connectionStrings = "mongodb://localhost:27017/gestorapp";
 const dbClient = new MongoClient(connectionStrings);
+const initializeDatabase = require('./config/initDatabase');
+
 let favoriteSongsRepository = require("./repositories/favoriteSongsRepository.js");
 favoriteSongsRepository.init(app, dbClient);
 let songsRepository = require("./repositories/songsRepository.js");
@@ -91,10 +93,20 @@ require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/songsAPIv1.0.js")(app, songsRepository, usersRepository);
+require("./routes/api/testAPI.js")(app, dbClient);
 require("./routes/songs/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);
 usersRepository.init(app, dbClient);
 require("./routes/users.js")(app, usersRepository);
+
+(async () => {
+  try {
+    await initializeDatabase(dbClient);
+    console.log("Database initialized successfully with sample data");
+  } catch (err) {
+    console.error("Failed to initialize database:", err);
+  }
+})();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

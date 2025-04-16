@@ -1,5 +1,6 @@
 package com.uniovi.sdi2425entrega2test.n.pageobjects;
 
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -77,18 +78,18 @@ public class PO_ListView extends PO_NavView{
     }
 
     static public boolean deleteVehiclesByIndexes(WebDriver driver, int[] indexes) {
-        List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"vehicleTable\"]/tbody/tr"));
+        List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"delete-form\"]/div/table/tbody/tr"));
         List<String> numberPlates = new ArrayList<>();
         for(int index : indexes){
             WebElement vehicleRow = vehicleRows.get(index);
             String vehiclePlate = vehicleRow.findElement(By.xpath(".//td[1]")).getText();
             numberPlates.add(vehiclePlate);
-            vehicleRow.findElement(By.xpath(".//td[8]/label/input")).click();
+            vehicleRow.findElement(By.xpath(".//td[8]/input")).click();
         }
 
         List<WebElement> deleteButton = driver.findElements(By.xpath("//*[@id=\"deleteButton\"]"));
         deleteButton.get(0).click();
-        vehicleRows = driver.findElements(By.xpath("//*[@id=\"vehicleTable\"]/tbody/tr"));
+        vehicleRows = driver.findElements(By.xpath("//*[@id=\"delete-form\"]/div/table/tbody/tr"));
         boolean found = false;
         for (WebElement row : vehicleRows) {
             for(String numberPlate : numberPlates){
@@ -99,5 +100,16 @@ public class PO_ListView extends PO_NavView{
             }
         }
         return found;
+    }
+
+    static public boolean searchThroughPages(WebDriver driver, String searchText) {
+        do {
+            List<WebElement> elements = driver.findElements(By.xpath("//*[contains(text(),'" + searchText + "')]"));
+            if (!elements.isEmpty()) {
+                return true;
+            }
+        } while (goToNextPage(driver));
+
+        return false;
     }
 }

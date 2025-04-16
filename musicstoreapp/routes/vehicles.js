@@ -1,5 +1,5 @@
 
-const validFuelTypes = ['Gasolina', 'Diesel', 'Microhíbrido',
+const validFuelTypes = ['Gasolina', 'Diésel', 'Microhíbrido',
     'Híbrido', 'Eléctrico', 'GLP', 'GNL'];
 
 const { ObjectId } = require('mongodb');
@@ -7,7 +7,9 @@ const { ObjectId } = require('mongodb');
 module.exports = function(app, vehiclesRepository, journeyRepository) {
 
     app.get('/vehicles/add', function (req, res) {
-        res.render("vehicles/add.twig");
+        res.render("vehicles/add.twig", {
+            validFuelTypes: validFuelTypes
+        });
     })
     app.post('/vehicles/add', async function(req, res) {
         let vehicle = {
@@ -34,16 +36,16 @@ module.exports = function(app, vehiclesRepository, journeyRepository) {
             errors.spaces = "Los campos no deben contener espacios al principio o al final";
         }
 
-        const licensePlateRegex = /^[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$|^[O][0-9]{4}[A-Z]{2}$/;
-        if (!licensePlateRegex.test(vehicle.numberPlate)) {
-            errors.numberPlate = 'Formato de matrícula inválido';
+        const numberPlateRegex = /^[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$|^[O][0-9]{4}[A-Z]{2}$/;
+        if (!numberPlateRegex.test(vehicle.numberPlate)) {
+            errors.numberPlate = 'Formato de matrícula inválido: La matrícula debe de seguir un formato válido Español';
         }
 
         if (vehicle.vin.length !== 17) {
-            errors.vin = 'El número de bastidor debe tener 17 caracteres';
+            errors.vin = 'El número de bastidor debe contener exactamente 17 caracteres';
         }
 
-        if (errors.length > 0) {
+        if (Object.keys(errors).length > 0 > 0) {
             res.render('vehicles/add.twig', {
                 errors: errors,
                 validFuelTypes: validFuelTypes
@@ -52,11 +54,21 @@ module.exports = function(app, vehiclesRepository, journeyRepository) {
         }
 
         try {
-            const existingVehicle = await vehiclesRepository
-                .findVehicleByNumberPlateOrVin(vehicle.numberPlate, vehicle.vin);
+            errors.existingVehicle = {};
 
-            if (existingVehicle) {
-                errors.existingVehicle = 'Matrícula o número de bastidor ya existe'
+            const existingVehicleNP = await vehiclesRepository
+                .findVehicleByNumberPlate(vehicle.numberPlate);
+            if(existingVehicleNP) {
+                errors.existingVehicle.numberPlate = 'Matrícula ya registrada en el sistema.'
+            }
+
+            const existingVehicleVIN = await vehiclesRepository
+                .findVehicleByVin(vehicle.vin);
+            if(existingVehicleVIN) {
+                errors.existingVehicle.VIN = 'Número de bastidor ya registrado en el sistema.'
+            }
+
+            if (Object.keys(errors.existingVehicle).length > 0) {
                 res.render('vehicles/add.twig',
                     {
                         errors: errors,
