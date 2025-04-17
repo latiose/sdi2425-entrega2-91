@@ -85,7 +85,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Rollback
     public void PR011() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -100,7 +100,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(12)
     public void PR012A() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -116,7 +116,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(13)
     public void PR012B() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -132,7 +132,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(14)
     public void PR012C() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -148,7 +148,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(15)
     public void PR012D() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -164,7 +164,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(16)
     public void PR013() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -181,7 +181,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(17)
     public void PR014A() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -198,7 +198,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(18)
     public void PR014B() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -215,7 +215,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(19)
     public void PR015() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -232,7 +232,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(20)
     public void PR016() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Agregar Vehículo");
 
@@ -248,7 +248,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Order(24)
     public void PR020() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
 
@@ -265,10 +265,9 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(25)
-    @Transactional
     public void PR021() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
 
@@ -278,10 +277,9 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(26)
-    @Transactional
     public void PR022() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
 
@@ -293,10 +291,9 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(27)
-    @Transactional
     public void PR023() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillLoginForm(driver, "admin@sdi.com", "admin");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
 
@@ -478,7 +475,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Transactional
     public void PR031() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
-        PO_LoginView.fillForm(driver, "10000002Q","Us3r@2-PASSW");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
@@ -525,3 +522,4 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(200, response.getStatusCode());
     }
 }
+
