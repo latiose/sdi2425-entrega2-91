@@ -49,8 +49,14 @@
       </ul>
       {% endif %}
       <ul class="nav navbar-nav navbar-right">
-	    <li><a href="/users/signup"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>
+        {% if user and user.role == 'ADMIN' %}
+	      <li><a href="/users/signup"><span class="glyphicon glyphicon-user"></span> Agregar empleado</a></li>
+        {% endif %}
+        {% if not user.logged %}
         <li><a href="/users/login"><span class="glyphicon glyphicon-log-in"></span> Identifícate</a></li>
+        {% else %}
+          <li><a href="/users/logout"><span class="glyphicon glyphicon-log-out"></span> Cerrar sesión</a></li>
+        {% endif %}
       </ul>
     </div>
   </div>
