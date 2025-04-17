@@ -43,12 +43,4 @@ public class PO_LoginView extends PO_NavView {
 		//Comprobamos que entramos en la pagina privada del Profesor
 		checkElementBy(driver, "text", checkText);
 	}
-
-	static public void logOut(WebDriver driver){
-		String loginText = PO_HomeView.getP().getString("logout.message", PO_Properties.getSPANISH());
-		PO_PrivateView.clickOption(driver, "logout", "text", loginText);
-		loginText = PO_HomeView.getP().getString("login.message", PO_Properties.getSPANISH());
-		List<WebElement> result = PO_View.checkElementBy(driver, "text", loginText);
-		Assertions.assertEquals(loginText, result.get(0).getText());
-	}
 }

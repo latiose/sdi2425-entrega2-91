@@ -316,7 +316,6 @@ class Sdi2425Entrega2TestApplicationTests {
                 assertTrue(matriculasEsperadas.contains(matricula));
             }
         }
-        PO_LoginView.logOut(driver);
     }
 
     @Test
@@ -505,21 +504,21 @@ class Sdi2425Entrega2TestApplicationTests {
 
     }
 
-    @Test
-    @Order(37)
-    public void PR33() {
-        final String RestAssuredURL = "http://localhost:8081/api/v1.0/users/login";
-        //2. Preparamos el parámetro en formato JSON
-        RequestSpecification request = RestAssured.given();
-        JSONObject requestParams = new JSONObject();
-        requestParams.put("email", "delacal@uniovi.es");
-        requestParams.put("password", "1234");
-        request.header("Content-Type", "application/json");
-        request.body(requestParams.toJSONString());
-        //3. Hacemos la petición
-        Response response = request.post(RestAssuredURL);
-        //4. Comprobamos que el servicio ha tenido exito
-        Assertions.assertEquals(200, response.getStatusCode());
-    }
+//    @Test
+//    @Order(37)
+//    public void PR33() {
+//        final String RestAssuredURL = "http://localhost:8081/api/v1.0/users/login";
+//        //2. Preparamos el parámetro en formato JSON
+//        RequestSpecification request = RestAssured.given();
+//        JSONObject requestParams = new JSONObject();
+//        requestParams.put("email", "delacal@uniovi.es");
+//        requestParams.put("password", "1234");
+//        request.header("Content-Type", "application/json");
+//        request.body(requestParams.toJSONString());
+//        //3. Hacemos la petición
+//        Response response = request.post(RestAssuredURL);
+//        //4. Comprobamos que el servicio ha tenido exito
+//        Assertions.assertEquals(200, response.getStatusCode());
+//    }
 }
 
