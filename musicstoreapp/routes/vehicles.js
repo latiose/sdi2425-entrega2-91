@@ -96,8 +96,8 @@ module.exports = function(app, vehiclesRepository, journeyRepository) {
             const result = await vehiclesRepository.getVehiclesPaginated(page);
 
             let lastPage = Math.ceil(result.total / 5);
-            if (result.total % 4 > 0) {
-                lastPage = lastPage + 1;
+            if (result.total % 5 === 0 && result.total > 0) {
+                lastPage = result.total / 5;
             }
             let pages = [];
             for (let i = page - 2; i <= page + 2; i++) {

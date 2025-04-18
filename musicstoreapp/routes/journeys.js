@@ -161,7 +161,6 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
     });
 
     app.get('/journeys/list', async function(req, res) {
-
         try {
             const employeeId = req.session.userId;
             let filter = { employeeId: new ObjectId(employeeId) };

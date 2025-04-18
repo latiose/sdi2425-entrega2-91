@@ -29,7 +29,7 @@ module.exports = async function initializeDatabase(client) {
                 password: hashPassword("@Dm1n1str@D0r", clave),
                 role: "ADMIN"
             }
-        ];
+        ];//
 
         for (let i = 1; i <= 15; i++) {
             const numDni = 10000000 + i;
