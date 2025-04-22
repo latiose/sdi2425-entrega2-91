@@ -18,7 +18,7 @@ module.exports = function (app, usersRepository) {
     }
     //res.send('usuario registrado');
     usersRepository.insertUser(user).then(userId => {
-      res.redirect("/users/login" +
+      res.redirect("/journeys/list" +
           "?message=Nuevo usuario registrado. Password: " + password +
           "&messageType=alert-info ");
     }).catch(error => {
