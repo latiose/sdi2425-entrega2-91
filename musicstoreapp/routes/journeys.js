@@ -199,7 +199,6 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                 }
 
                 let vehicleId = req.params.id;
-                // First verify if it's a valid ObjectId
                 if (!ObjectId.isValid(vehicleId)) {
                     vehicleId = vehicles[0]._id.toString();
                 } else {
@@ -209,7 +208,6 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                     }
                 }
 
-                // Convert to ObjectId when passing to the filter
                 let filter = { vehicleId: new ObjectId(vehicleId) };
                 let page = parseInt(req.query.page) || 1;
 
@@ -225,7 +223,6 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                     pages.push(i);
                 }
             }
-
 
                 res.render('journeys/vehicle.twig', {
                     vehicles: vehicles,

@@ -87,13 +87,14 @@ let songsRepository = require("./repositories/songsRepository.js");
 songsRepository.init(app, dbClient);
 const usersRepository = require("./repositories/usersRepository.js");
 let vehiclesRepository = require("./repositories/vehiclesRepository.js")
-let journeysRepository = require("./repositories/journeyRepository.js")
+let journeysRepository = require("./repositories/journeysRepository.js")
 vehiclesRepository.init(app, dbClient);
 journeysRepository.init(app,dbClient)
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
-require("./routes/api/songsAPIv1.0.js")(app, songsRepository, usersRepository);
+require("./routes/api/JourneysAPIv1.0.js")(app, journeysRepository,usersRepository,vehiclesRepository);
+require("./routes/api/VehiclesAPIv1.0.js")(app, vehiclesRepository);
 require("./routes/api/testAPI.js")(app, dbClient);
 require("./routes/songs/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);

@@ -1,0 +1,67 @@
+<div id="widget-agregar">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="numberPlate">Vehículo:</label>
+    <div class="col-sm-10">
+      <select id="numberPlate" name="numberPlate" class="form-control" required>
+        <option value="">-- Seleccione un vehículo --</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-sm-offset-2 col-sm-10">
+    <button type="button" class="btn btn-primary" id="boton-add"
+            onclick="widgetAddJourney()">Nuevo trayecto</button>
+  </div>
+</div>
+
+<script>
+  function widgetAddJourney() {
+    const numberPlate = $("#numberPlate").val();
+    if (!numberPlate) {
+      alert("Debe seleccionar un vehículo.");
+      return;
+    }
+
+    $.ajax({
+      url: URLbase + "/journeys/add",
+      type: "POST",
+      data: { numberPlate },
+      headers: { "token": token },
+      dataType: 'json',
+      success: function (response) {
+        alert("Trayecto iniciado con éxito");
+        $("#main-container").load("widget-journeys.html");
+      },
+      error: function (xhr) {
+        const msg = xhr.responseJSON?.error || "Error al iniciar trayecto.";
+        alert(msg);
+      }
+    });
+  }
+</script>
+
+
+<script>
+  function loadVehiclesCombo() {
+    $.ajax({
+      url: URLbase + "/vehicles/list",
+      type: "GET",
+      headers: { "token": token },
+      success: function (data) {
+        let select = $('#numberPlate');
+        select.empty();
+        select.append('<option value="">-- Seleccione un vehículo --</option>');
+        data.forEach(function(vehicle) {
+          let label = `${vehicle.numberPlate} - ${vehicle.brand} ${vehicle.model}`;
+          select.append(`<option value="${vehicle.numberPlate}">${label}</option>`);
+        });
+      },
+      error: function () {
+        alert('No se pudo cargar la lista de vehículos.');
+      }
+    });
+  }
+
+  $(document).ready(function () {
+    loadVehiclesCombo();
+  });
+</script>
