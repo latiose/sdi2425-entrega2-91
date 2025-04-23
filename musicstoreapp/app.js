@@ -57,7 +57,10 @@ const userSessionRouter = require('./routes/userSessionRouter');
 
 const userAudiosRouter = require('./routes/userAudiosRouter');
 const userTokenRouter = require('./routes/userTokenRouter');
-app.use("/api/v1.0/songs/", userTokenRouter);
+//añadir esto cuando se acabe el 1
+//app.use("/api/v1.0/songs/", userTokenRouter);
+//app.use("/api/v1.0/journeys/", userTokenRouter);
+//app.use("/api/v1.0/vehicles/", userTokenRouter);
 app.use("/songs/add",userSessionRouter);
 app.use("/publications",userSessionRouter);
 app.use("/songs/buy",userSessionRouter);
@@ -93,6 +96,7 @@ journeysRepository.init(app,dbClient)
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
+require("./routes/api/UserAPIv1.0.js")(app,usersRepository);
 require("./routes/api/JourneysAPIv1.0.js")(app, journeysRepository,usersRepository,vehiclesRepository);
 require("./routes/api/VehiclesAPIv1.0.js")(app, vehiclesRepository);
 require("./routes/api/testAPI.js")(app, dbClient);

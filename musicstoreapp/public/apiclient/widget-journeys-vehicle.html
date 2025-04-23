@@ -19,22 +19,18 @@
   </table>
 </div>
 
-<<script>
-  let journeys = [];
-  let vehicles = [];
-  let selectedVehicleId = null;
-
+<script>
   function loadVehicles() {
     $.ajax({
-      url: URLbase + "/api/vehicles",
+      url: URLbase + "/vehicles/list",
       type: "GET",
       headers: { "token": token },
       success: function (data) {
-        vehicles = data;
-        const select = $("#selectVehicle");
-        select.empty().append('<option value="">-- Seleccione un vehículo --</option>');
-        vehicles.forEach(vehicle => {
-          const label = `${vehicle.numberPlate} - ${vehicle.brand} ${vehicle.model}`;
+        let select = $("#selectVehicle");
+        select.empty();
+        select.append('<option value="">-- Seleccione un vehículo --</option>');
+        data.forEach(function(vehicle) {
+          let label = `${vehicle.numberPlate} - ${vehicle.brand} ${vehicle.model}`;
           select.append(`<option value="${vehicle._id}">${label}</option>`);
         });
       },
@@ -45,37 +41,39 @@
   }
 
   function loadJourneys() {
-    selectedVehicleId = $("#selectVehicle").val();
-    if (!selectedVehicleId) return;
+    let vehicleId = $("#selectVehicle").val();
+    if (!vehicleId) {
+      $("#journeysTableBody").empty();
+      return;
+    }
 
     $.ajax({
-      url: URLbase + "/journeys/vehicle/" + selectedVehicleId,
+      url: URLbase + "/journeys/vehicle/" + vehicleId,
       type: "GET",
       headers: { "token": token },
       success: function (response) {
-        journeys = response.journeys || [];
-        updateJourneysTable();
+        updateJourneysTable(response.journeys || []);
       },
       error: function () {
-        $("#main-container").load("widget-login.html");
+        alert("Error al cargar trayectos.");
       }
     });
   }
 
-  function updateJourneysTable() {
-    const tbody = $("#journeysTableBody");
+  function updateJourneysTable(journeys) {
+    let tbody = $("#journeysTableBody");
     tbody.empty();
-    journeys.forEach(journey => {
-      const start = new Date(journey.startDate);
-      const startStr = start.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+    journeys.forEach(function(journey) {
+      let start = new Date(journey.startDate);
+      let startStr = start.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 
       let duracion = "En progreso";
       let distancia = "En progreso";
 
       if (journey.endDate) {
-        const durMin = journey.duration || 0;
-        const horas = Math.floor(durMin / 60);
-        const minutos = durMin % 60;
+        let durMin = journey.duration || 0;
+        let horas = Math.floor(durMin / 60);
+        let minutos = durMin % 60;
         duracion = `${horas}h ${minutos}m`;
         distancia = (journey.odometerEnd - journey.odometerStart) + " km";
       }
@@ -91,12 +89,23 @@
     });
   }
 
-  $(document).ready(function () {
-    loadVehicles();
-    setInterval(() => {
+  function startAutoRefresh() {
+    return setInterval(function() {
       if ($("#selectVehicle").val()) {
         loadJourneys();
       }
     }, 5000);
+  }
+
+  $(document).ready(function() {
+    loadVehicles();
+    let refreshInterval = startAutoRefresh();
+
+
+    $(window).on('unload', function() {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    });
   });
 </script>

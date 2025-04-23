@@ -35,7 +35,7 @@
         console.log(response.token); // Prueba.
         token = response.token;
         Cookies.set('token', token);
-        $("#main-container").load("widget-songs.html");
+        $("#main-container").load("widget-journeys-vehicle.html"); //no estoy seguro de a donde hay que redirigir
       },
       error: function(error) {
         Cookies.remove('token');

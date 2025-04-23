@@ -1,5 +1,5 @@
 const {ObjectId} = require("mongodb");
-module.exports = function (app, journeysRepository,usersRepository,vehiclesRepository) {
+module.exports = function (app, journeysRepository, usersRepository, vehiclesRepository) {
 
     app.post('/api/v1.0/journeys/add', async function(req, res) {
         let numberPlate = req.body.numberPlate;
@@ -64,7 +64,6 @@ module.exports = function (app, journeysRepository,usersRepository,vehiclesRepos
         }
     });
 
-
     app.get('/api/v1.0/journeys/vehicle/:id', async function(req, res) {
         try {
             const vehicles = await vehiclesRepository.getAllVehicles();
@@ -82,29 +81,11 @@ module.exports = function (app, journeysRepository,usersRepository,vehiclesRepos
                 }
             }
 
-            const filter = { vehicleId: new ObjectId(vehicleId) };
-            const page = parseInt(req.query.page) || 1;
-
-            const result = await journeysRepository.getJourneysPaginated(filter, {}, page);
-
-            const total = result.total || 0;
-            let lastPage = Math.ceil(total / 5);
-            if (total % 5 === 0 && total > 0) {
-                lastPage = total / 5;
-            }
-
-            const pages = [];
-            for (let i = page - 1; i <= page + 1; i++) {
-                if (i > 0 && i <= lastPage) {
-                    pages.push(i);
-                }
-            }
+            const journeys = await journeysRepository.getJourneysByVehicle(new ObjectId(vehicleId));
 
             res.json({
                 vehicles,
-                journeys: result.journeys,
-                pages,
-                currentPage: page,
+                journeys,
                 currentVehicleId: vehicleId
             });
 
@@ -114,8 +95,4 @@ module.exports = function (app, journeysRepository,usersRepository,vehiclesRepos
     });
 
 
-
-
 }
-
-
