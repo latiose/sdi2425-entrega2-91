@@ -1,4 +1,4 @@
-module.exports = function (app, usersRepository) {
+module.exports = function (app, usersRepository, logs) {
   app.get('/users', function (req, res) {
     res.send('lista de usuarios');
   })
@@ -16,9 +16,9 @@ module.exports = function (app, usersRepository) {
       password: securePassword,
       role: "EMPLOYEE"
     }
-    //res.send('usuario registrado');
-    usersRepository.insertUser(user).then(userId => {
-      res.redirect("/users/login" +
+    usersRepository.insertUser(user).then(async userId => {
+      await logs.logSignup(user);
+      res.redirect("/journeys/list" +
           "?message=Nuevo usuario registrado. Password: " + password +
           "&messageType=alert-info ");
     }).catch(error => {
@@ -27,11 +27,10 @@ module.exports = function (app, usersRepository) {
       );
     });
   });
-  app.get('/users/login', function (req, res) {
-    if(req.session.user){
+  app.get('/users/login', async function (req, res) {
+    if (req.session.user) {
       res.redirect("/journeys/list");
-    }
-    else
+    } else
       res.render("login.twig");
   })
   app.post('/users/login', function (req, res) {
@@ -42,9 +41,10 @@ module.exports = function (app, usersRepository) {
       password: securePassword
     };
     let options = {};
-    usersRepository.findUser(filter, options).then(user => {
+    usersRepository.findUser(filter, options).then(async user => {
       if (user == null) {
         req.session.user = null;
+        await logs.logLoginEx(req.session.user);
         res.redirect("/users/login" +
             "?message=Dni o password incorrecto" +
             "&messageType=alert-danger ");
@@ -54,6 +54,7 @@ module.exports = function (app, usersRepository) {
         req.session.surname = user.surname;
         req.session.role = user.role;
         req.session.userId = user._id;
+        await logs.logLoginEx(req.session.user);
         res.redirect("/journeys/list");
       }
     }).catch(error => {
@@ -67,7 +68,8 @@ module.exports = function (app, usersRepository) {
       );
     });
   });
-  app.get('/users/logout', function (req, res) {
+  app.get('/users/logout', async function (req, res) {
+    await logs.logLogout(req.session.user);
     req.session.destroy(err => {
       if (err) {
         console.log("Error: " + err);

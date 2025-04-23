@@ -7,6 +7,8 @@ module.exports = async function initializeDatabase(client) {
         console.log("Connected to MongoDB");
 
         const db = client.db();
+        const logsCollection = db.collection("logs");
+        await logsCollection.deleteMany({});
 
         const usersCollection = db.collection("users");
         await usersCollection.deleteMany({});

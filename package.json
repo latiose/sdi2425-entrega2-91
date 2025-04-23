@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "cookie-parser": "^1.4.7",
-    "express": "^4.18.3"
+    "express": "^4.18.3",
+    "log4js": "^6.9.1"
   },
   "devDependencies": {
     "mongodb-memory-server": "^10.1.4"

@@ -53,6 +53,16 @@ app.use('/', indexRouter);
 const addUserToViews = require('./middlewares/addUserToViews');
 app.use(addUserToViews);
 
+const { MongoClient } = require("mongodb");
+const connectionStrings = "mongodb://localhost:27017/gestorapp";
+const dbClient = new MongoClient(connectionStrings);
+const initializeDatabase = require('./config/initDatabase');
+
+const logsRepository = require("./repositories/logsRepository.js");
+logsRepository.init(app, dbClient)
+const logs = require("./routes/logs.js")(app, logsRepository);
+app.use(logs.logRequest);
+
 const userSessionRouter = require('./routes/userSessionRouter');
 
 const userAudiosRouter = require('./routes/userAudiosRouter');
@@ -79,11 +89,6 @@ app.use("/vehicles/list", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const { MongoClient } = require("mongodb");
-const connectionStrings = "mongodb://localhost:27017/gestorapp";
-const dbClient = new MongoClient(connectionStrings);
-const initializeDatabase = require('./config/initDatabase');
-
 let favoriteSongsRepository = require("./repositories/favoriteSongsRepository.js");
 favoriteSongsRepository.init(app, dbClient);
 let songsRepository = require("./repositories/songsRepository.js");
@@ -93,6 +98,7 @@ let vehiclesRepository = require("./repositories/vehiclesRepository.js")
 let journeysRepository = require("./repositories/journeysRepository.js")
 vehiclesRepository.init(app, dbClient);
 journeysRepository.init(app,dbClient)
+
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
@@ -103,7 +109,7 @@ require("./routes/api/testAPI.js")(app, dbClient);
 require("./routes/songs/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);
 usersRepository.init(app, dbClient);
-require("./routes/users.js")(app, usersRepository);
+require("./routes/users.js")(app, usersRepository, logs);
 
 (async () => {
   try {
