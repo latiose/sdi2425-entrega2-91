@@ -1,0 +1,62 @@
+{% extends "layout.twig" %}
+
+{% block title %}Gestorapp - Home{% endblock %}
+
+{% block main_container %}
+    <div class="container py-5">
+        <!-- Hero Section with Gradient Background -->
+        <div class="jumbotron text-center p-5 rounded-lg shadow-sm mb-5"
+             style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <h1 class="display-4 fw-bold text-primary mb-3">Bienvenido a Gestorapp</h1>
+            <p class="lead fs-4 mb-4">Tu plataforma para gestionar empleados, vehículos y más de manera eficiente.</p>
+
+            {% if user.logged %}
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-5">
+                    <a href="/journeys/list" class="btn btn-primary btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-map fs-3"></i> Gestionar Trayectos
+                    </a>
+                    {% if user.role == "ADMIN" %}
+                    <a href="/vehicles/list" class="btn btn-success btn-lg px-4 py-3 d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-truck fs-3"></i> Gestionar Vehículos
+                    </a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-5">
+                    <p class="card-text text-muted mb-4">Inicia sesión para acceder a todas las funcionalidades de Gestorapp</p>
+                    <a href="/users/login" class="btn btn-primary btn-lg px-5">Iniciar sesión</a>
+                </div>
+            {% endif %}
+
+        </div>
+
+            <div class="container mt-5">
+                <div class="p-5 border rounded shadow-sm">
+                    <h3 class="text-center mb-5 text-secondary">¿Por qué usar Gestorapp?</h3>
+                    <div class="row g-4 text-center">
+                        <div class="col-md-4">
+                            <div class="p-5 h-100 rounded-4 shadow-sm">
+                                <i class="bi bi-speedometer2 text-primary display-1 mb-4" style="font-size: 5rem;"></i>
+                                <h4 class="fw-bold">Gestión Eficiente</h4>
+                                <p class="text-muted">Administra tus viajes y vehículos de manera rápida y sencilla.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-5 h-100 rounded-4 shadow-sm">
+                                <i class="bi bi-graph-up text-success display-1 mb-4" style="font-size: 5rem;"></i>
+                                <h4 class="fw-bold">Datos Detallados</h4>
+                                <p class="text-muted">Visualiza datos importantes sobre tus trayectos y vehículos.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-5 h-100 rounded-4 shadow-sm">
+                                <i class="bi bi-shield-check text-danger display-1 mb-4" style="font-size: 5rem;"></i>
+                                <h4 class="fw-bold">Seguro y Confiable</h4>
+                                <p class="text-muted">Tu información y la de tus empleados siempre protegida y disponible cuando la necesites.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+{% endblock %}
