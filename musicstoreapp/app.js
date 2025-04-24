@@ -60,7 +60,7 @@ const initializeDatabase = require('./config/initDatabase');
 
 const logsRepository = require("./repositories/logsRepository.js");
 logsRepository.init(app, dbClient)
-const logs = require("./routes/logs.js")(app, logsRepository);
+const logs = require("./middlewares/logger.js")(app, logsRepository);
 app.use(logs.logRequest);
 
 const userSessionRouter = require('./routes/userSessionRouter');
@@ -79,6 +79,8 @@ app.use("/audios/",userAudiosRouter);
 app.use("/shop/",userSessionRouter)
 app.use("/journeys/", userSessionRouter);
 app.use("/vehicles/", userSessionRouter);
+app.use("/users/list", userSessionRouter);
+app.use("/logs/", userSessionRouter);
 const userAuthorRouter = require('./routes/userAuthorRouter');
 app.use("/songs/edit",userAuthorRouter);
 app.use("/songs/delete",userAuthorRouter);
@@ -86,6 +88,7 @@ const adminSessionRouter = require('./routes/adminSessionRouter');
 app.use("/users/signup", adminSessionRouter);
 app.use("/vehicles/add", adminSessionRouter);
 app.use("/vehicles/list", adminSessionRouter);
+app.use("/logs/", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
