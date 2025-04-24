@@ -48,11 +48,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/', indexRouter);
 
 const addUserToViews = require('./middlewares/addUserToViews');
 app.use(addUserToViews);
-
+app.use('/', indexRouter);
 const { MongoClient } = require("mongodb");
 const connectionStrings = "mongodb://localhost:27017/gestorapp";
 const dbClient = new MongoClient(connectionStrings);
