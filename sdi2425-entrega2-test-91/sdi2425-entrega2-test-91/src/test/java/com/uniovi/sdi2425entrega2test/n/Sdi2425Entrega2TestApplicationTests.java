@@ -492,7 +492,7 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
     @Test
-    @Order(32)
+    @Order(36)
     public void PR032() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
@@ -502,6 +502,29 @@ class Sdi2425Entrega2TestApplicationTests {
 
         Assertions.assertEquals(5, rows.size());
 
+    }
+
+    @Test
+    @Order(37)
+    public void PR033() {
+        driver.get("http://localhost:8081/users/list");
+        new WebDriverWait(driver, 10).until(ExpectedConditions.urlContains("/login"));
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/login"));
+    }
+
+    @Test
+    @Order(38)
+    public void PR034() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S", "Us3r@1-PASSW");
+
+        driver.get("http://localhost:8081/logs/list");
+
+        String checkText = "Acceso denegado: requiere privilegios de administrador";
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
 //    @Test
@@ -520,5 +543,7 @@ class Sdi2425Entrega2TestApplicationTests {
 //        //4. Comprobamos que el servicio ha tenido exito
 //        Assertions.assertEquals(200, response.getStatusCode());
 //    }
+
+
 }
 

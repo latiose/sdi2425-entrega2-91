@@ -44,7 +44,7 @@ module.exports = function (app, usersRepository, logs) {
     usersRepository.findUser(filter, options).then(async user => {
       if (user == null) {
         req.session.user = null;
-        await logs.logLoginEx(req.session.user);
+        await logs.logLoginErr(req.body.dni);
         res.redirect("/users/login" +
             "?message=Dni o password incorrecto" +
             "&messageType=alert-danger ");
