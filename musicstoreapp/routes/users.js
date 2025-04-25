@@ -78,6 +78,111 @@ module.exports = function (app, usersRepository, logs) {
     });
   });
 
+  app.get('/employee/list', async function(req, res) {
+    let page = parseInt(req.query.page) || 1;
+    try {
+      const result = await usersRepository.getUsersPaginated(page);
+
+      let lastPage = Math.ceil(result.total / 5);
+      if (result.total % 5 === 0 && result.total > 0) {
+        lastPage = result.total / 5;
+      }
+
+      let pages = [];
+      for (let i = page - 2; i <= page + 2; i++) {
+        if (i > 0 && i <= lastPage) {
+          pages.push(i);
+        }
+      }
+
+      res.render("employee/list.twig", {
+        employees: result.users,
+        pages: pages,
+        currentPage: page
+      });
+    } catch (error) {
+      res.render("employee/list.twig", {
+        errors: {error: "Se ha producido un error al listar los empleados: " + error.message}
+      });
+    }
+  });
+
+  app.post('/employee/edit/:id', async (req, res) => {
+    const id = req.params.id;
+    let userId;
+
+    try {
+      // Convertir id a ObjectId para MongoDB
+      userId = new ObjectId(id);
+    } catch (error) {
+      return res.status(400).send('ID de empleado inválido');
+    }
+
+    const updatedEmployee = {
+      dni: req.body.dni,
+      name: req.body.name,
+      lastName: req.body.lastName,
+      role: req.body.role
+    };
+
+
+    const errors = {};
+
+
+    if (!updatedEmployee.dni || updatedEmployee.dni.trim() === '') {
+      errors.dni = 'El DNI no puede estar vacío';
+    }
+    if (!updatedEmployee.name || updatedEmployee.name.trim() === '') {
+      errors.name = 'El nombre no puede estar vacío';
+    }
+    if (!updatedEmployee.lastName || updatedEmployee.lastName.trim() === '') {
+      errors.lastName = 'El apellido no puede estar vacío';
+    }
+
+    try {
+
+      const originalEmployee = await usersRepository.findUser({ _id: userId });
+
+      if (!originalEmployee) {
+        return res.status(404).send('Empleado no encontrado');
+      }
+
+      if (updatedEmployee.dni !== originalEmployee.dni) {
+        const existingUserWithDni = await usersRepository.findUserByDniExcludingId(updatedEmployee.dni, userId);
+
+        if (existingUserWithDni) {
+          errors.dni = 'Este DNI ya está registrado por otro empleado';
+        }
+      }
+
+      if (Object.keys(errors).length > 0) {
+        return res.render('employee/edit', {
+          employee: {
+            id: id,
+            ...originalEmployee,
+            ...updatedEmployee
+          },
+          errors: errors
+        });
+      }
+
+      const employeeToUpdate = {
+        dni: updatedEmployee.dni,
+        name: updatedEmployee.name,
+        lastName: updatedEmployee.lastName,
+        role: updatedEmployee.role
+      };
+
+      await usersRepository.updateUser(userId, employeeToUpdate);
+      res.redirect('/employee/details/' + id);
+
+    } catch (error) {
+      console.error('Error al actualizar el empleado:', error);
+      res.status(500).send('Error al procesar la solicitud: ' + error.message);
+    }
+  });
+
+
   function generarContrasena(longitud = 12) {
     const mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const minusculas = "abcdefghijklmnopqrstuvwxyz";
