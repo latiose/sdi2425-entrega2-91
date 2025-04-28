@@ -29,7 +29,7 @@ class Sdi2425Entrega2TestApplicationTests {
     static String PathFirefox = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
     static String Geckodriver = "geckodriver.exe";
     static WebDriver driver = getDriver(PathFirefox, Geckodriver);
-    static String URL = "http://localhost:8081";
+    static String URL = "http://localhost:8081/users/login";
 
     public static WebDriver getDriver(String PathFirefox, String Geckodriver) {
         System.setProperty("webdriver.firefox.bin", PathFirefox);
@@ -67,18 +67,7 @@ class Sdi2425Entrega2TestApplicationTests {
 
 
 
-    /* Ejemplos de pruebas de llamada a una API-REST */
-    /* ---- Probamos a obtener lista de canciones sin token ---- */
-    /*
-    @Test
-    @Order(11)
-    public void PRApiRestTest() {
-        final String RestAssuredURL = "http://localhost:8081/api/v1.0/songs";
-        Response response = RestAssured.get(RestAssuredURL);
-        Assertions.assertEquals(403, response.getStatusCode());
-    }
 
-*/
     @Test
     @Order(11)
     @Transactional
@@ -544,6 +533,19 @@ class Sdi2425Entrega2TestApplicationTests {
 //        Assertions.assertEquals(200, response.getStatusCode());
 //    }
 
+
+    /* Ejemplos de pruebas de llamada a una API-REST */
+    /* ---- Probamos a obtener lista de canciones sin token ---- */
+    /*
+    @Test
+    @Order(11)
+    public void PRApiRestTest() {
+        final String RestAssuredURL = "http://localhost:8081/api/v1.0/songs";
+        Response response = RestAssured.get(RestAssuredURL);
+        Assertions.assertEquals(403, response.getStatusCode());
+    }
+
+*/
 
 }
 

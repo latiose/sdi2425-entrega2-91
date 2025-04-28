@@ -1,0 +1,57 @@
+<div id="widget-journeys">
+    <div class="form-group">
+        <h2>Lista de vehículos disponibles</h2>
+    </div>
+
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th>Matrícula</th>
+            <th>Nº Bastidor</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Combustible</th>
+            <th>Kilometraje</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody id="vehiclesTableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    function loadVehicles() {
+        $.ajax({
+            url: URLbase + "/vehicles/list",
+            type: "GET",
+            headers: { "token": token },
+            success: function (data) {
+                let tbody = $("#vehiclesTableBody");
+                tbody.empty();
+                data.forEach(function(vehicle) {
+                    let statusClass = vehicle.status === "LIBRE" ? "bg-success" : "bg-warning";
+                    tbody.append(`
+                            <tr>
+                              <td>${vehicle.numberPlate}</td>
+                              <td>${vehicle.vin}</td>
+                              <td>${vehicle.brand}</td>
+                              <td>${vehicle.model}</td>
+                              <td>${vehicle.fuelType}</td>
+                              <td>${vehicle.mileage} km</td>
+                              <td>
+                                <span class="badge ${statusClass}">${vehicle.status}</span>
+                              </td>
+                            </tr>
+                    `);
+                });
+            },
+            error: function () {
+                alert("Error al cargar vehículos.");
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        loadVehicles();
+    });
+</script>
