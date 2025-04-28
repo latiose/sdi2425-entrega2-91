@@ -22,7 +22,7 @@
 <script>
     function loadVehicles() {
         $.ajax({
-            url: URLbase + "/vehicles/list",
+            url: URLbase + "/vehicles/available",
             type: "GET",
             headers: { "token": token },
             success: function (data) {

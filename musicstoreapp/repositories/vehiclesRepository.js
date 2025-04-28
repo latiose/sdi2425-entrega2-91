@@ -8,7 +8,6 @@ module.exports = {
         this.dbClient = dbClient;
         this.app = app;
     },
-
     findVehicleByNumberPlateOrVin: async function(numberPlate, vin) {
         try {
             await this.dbClient.connect();
@@ -108,4 +107,15 @@ module.exports = {
             throw error;
         }
     },
+
+    getFilteredVehicles: async function(filter) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const vehiclesCollection = database.collection(this.collectionName);
+            return await vehiclesCollection.find(filter).toArray();
+        } catch (error) {
+            throw error;
+        }
+    }
 };
