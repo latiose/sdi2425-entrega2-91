@@ -4,7 +4,6 @@ const crypto = require('crypto');
 module.exports = async function initializeDatabase(client) {
     try {
         await client.connect();
-        console.log("Connected to MongoDB");
 
         const db = client.db();
         const logsCollection = db.collection("logs");
@@ -49,7 +48,6 @@ module.exports = async function initializeDatabase(client) {
 
 
         await usersCollection.insertMany(users);
-        console.log("Users initialized");
 
         const vehiclesCollection = db.collection("vehicles");
         await vehiclesCollection.deleteMany({});
@@ -234,7 +232,7 @@ module.exports = async function initializeDatabase(client) {
                 "status": "LIBRE"
             }
         ]);
-        console.log("Vehicles initialized");
+
 
         const journeysCollection = db.collection("journeys");
         await journeysCollection.deleteMany({});
@@ -863,6 +861,116 @@ module.exports = async function initializeDatabase(client) {
                 }
             );
         }
+
+        const allVehicles = await vehiclesCollection.find({}).toArray();
+        const journeyCounts = {};
+
+        allVehicles.forEach(vehicle => {
+            journeyCounts[vehicle.numberPlate] = 0;
+        });
+
+        const existingJourneys = await journeysCollection.find({}).toArray();
+        existingJourneys.forEach(journey => {
+            if (journey.vehiclePlate in journeyCounts) {
+                journeyCounts[journey.vehiclePlate]++;
+            }
+        });
+
+        const adminUser = await usersCollection.findOne({ role: "ADMIN" });
+
+        const currentDate = new Date();
+
+        const journeyTemplates = [];
+        for (let i = 0; i < 10; i++) {
+            const daysAgo = 28 - Math.floor(i * 2.8);
+            const hoursOffset = 9 + i;
+            const startDate = new Date(currentDate);
+            startDate.setDate(startDate.getDate() - daysAgo);
+            startDate.setHours(hoursOffset % 24, (i * 6) % 60, 0);
+
+            const duration = (0.5 + (i % 5) * 0.5).toFixed(2);
+
+            const endDate = new Date(startDate);
+            const durationHours = Math.floor(duration);
+            const durationMinutes = Math.round((duration - durationHours) * 60);
+            endDate.setHours(endDate.getHours() + durationHours, endDate.getMinutes() + durationMinutes);
+
+            journeyTemplates.push({
+                startDate,
+                endDate,
+                duration: parseFloat(duration)
+            });
+        }
+
+        const newJourneys = [];
+        const journeysToRemove = [];
+
+        for (const vehicle of allVehicles) {
+            const currentCount = journeyCounts[vehicle.numberPlate] || 0;
+
+            if (currentCount < 10) {
+                const journeysToAdd = 10 - currentCount;
+                console.log(`Adding ${journeysToAdd} journeys to vehicle ${vehicle.numberPlate}`);
+
+                let baseOdometer = 5000;
+                const vehicleJourneys = existingJourneys.filter(j => j.vehiclePlate === vehicle.numberPlate);
+                if (vehicleJourneys.length > 0) {
+                    const maxOdometer = Math.max(...vehicleJourneys.map(j => j.odometerEnd || 0));
+                    baseOdometer = maxOdometer > 0 ? maxOdometer : Math.floor(Math.random() * 80000) + 5000;
+                } else {
+                    baseOdometer = Math.floor(Math.random() * 80000) + 5000;
+                }
+
+                for (let i = 0; i < journeysToAdd; i++) {
+                    const templateIndex = (currentCount + i) % 10;
+                    const template = journeyTemplates[templateIndex];
+
+                    const odometerStart = baseOdometer + (i * 100);
+                    const distanceTraveled = Math.floor(Math.random() * 80) + 20; // 20-100 km per journey
+                    const odometerEnd = odometerStart + distanceTraveled;
+
+                    const journey = {
+                        startDate: new Date(template.startDate),
+                        odometerStart: odometerStart,
+                        vehicleId: vehicle._id,
+                        vehiclePlate: vehicle.numberPlate,
+                        employeeId: adminUser._id,
+                        driverName: adminUser.dni,
+                        comments: `Journey ${currentCount + i + 1} for ${vehicle.numberPlate}`,
+                        duration: template.duration,
+                        endDate: new Date(template.endDate),
+                        odometerEnd: odometerEnd
+                    };
+
+                    newJourneys.push(journey);
+                }
+            } else if (currentCount > 10) {
+
+                const journeysToRemoveCount = currentCount - 10;
+
+                const vehicleJourneys = existingJourneys.filter(j => j.vehiclePlate === vehicle.numberPlate);
+
+                vehicleJourneys.sort((a, b) => a.startDate - b.startDate);
+
+                for (let i = 0; i < journeysToRemoveCount; i++) {
+                    if (vehicleJourneys[i] && vehicleJourneys[i]._id) {
+                        journeysToRemove.push(vehicleJourneys[i]._id);
+                    }
+                }
+            }
+        }
+
+        if (journeysToRemove.length > 0) {
+            await journeysCollection.deleteMany({ _id: { $in: journeysToRemove } });
+            console.log(`Removed ${journeysToRemove.length} excess journeys.`);
+        }
+
+        if (newJourneys.length > 0) {
+            await journeysCollection.insertMany(newJourneys);
+            console.log(`Added ${newJourneys.length} new journeys to ensure all vehicles have exactly 10 journeys.`);
+        }
+
+
     } catch (error) {
         console.error("Error initializing database:", error);
     }
