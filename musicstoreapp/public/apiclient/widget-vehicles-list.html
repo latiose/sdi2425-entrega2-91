@@ -13,6 +13,7 @@
             <th>Combustible</th>
             <th>Kilometraje</th>
             <th>Estado</th>
+            <th></th>
         </tr>
         </thead>
         <tbody id="vehiclesTableBody"></tbody>
@@ -41,6 +42,12 @@
                               <td>
                                 <span class="badge ${statusClass}">${vehicle.status}</span>
                               </td>
+                              <td>
+                                    <button type="button" class="btn btn-primary" id="boton-add"
+                                    onclick="widgetJourneysVehicle('${vehicle._id}')">
+                                    Ver trayectos
+                                    </button>
+                              </td>
                             </tr>
                     `);
                 });
@@ -48,6 +55,13 @@
             error: function () {
                 alert("Error al cargar vehículos.");
             }
+        });
+    }
+
+
+    function widgetJourneysVehicle(vehicleId) {
+        $("#main-container").load("widget-journeys-vehicle.html", function () {
+            $("#selectVehicle").val(vehicleId).change();
         });
     }
 
