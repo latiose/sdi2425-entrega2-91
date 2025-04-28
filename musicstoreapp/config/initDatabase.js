@@ -27,19 +27,41 @@ module.exports = async function initializeDatabase(client) {
             {
                 _id: adminId,
                 dni: "12345678Z",
+                name: "Administrador",
+                lastName: "Sistema",
                 password: hashPassword("@Dm1n1str@D0r", clave),
                 role: "ADMIN"
             }
-        ];//
+        ];
+
+        const names = [
+            "Antonio", "Manuel", "José", "Francisco", "David",
+            "Juan", "José Antonio", "Javier", "Daniel", "Carlos",
+            "María", "Carmen", "Ana", "Isabel", "Laura",
+            "Lucía", "Cristina", "Marta", "Elena", "Sara"
+        ];
+
+        const lastNames = [
+            "García", "Rodríguez", "González", "Fernández", "López",
+            "Martínez", "Sánchez", "Pérez", "Gómez", "Martín",
+            "Jiménez", "Ruiz", "Hernández", "Díaz", "Moreno",
+            "Álvarez", "Romero", "Navarro", "Torres", "Domínguez"
+        ];
 
         for (let i = 1; i <= 15; i++) {
             const numDni = 10000000 + i;
             const letra = calcularLetraDNI(numDni);
             const dni = `${numDni}${letra}`;
             const plainPassword = `Us3r@${i}-PASSW`;
+
+            const nameIndex = Math.floor(Math.random() * names.length);
+            const lastNameIndex = Math.floor(Math.random() * lastNames.length);
+
             const user = {
                 _id: new ObjectId(),
                 dni: dni,
+                name: names[nameIndex],
+                lastName: lastNames[lastNameIndex],
                 password: hashPassword(plainPassword, clave),
                 role: "EMPLOYEE"
             };

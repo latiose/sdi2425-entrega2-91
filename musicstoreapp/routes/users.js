@@ -1,3 +1,4 @@
+const {ObjectId} = require("mongodb");
 module.exports = function (app, usersRepository, logs) {
   app.get('/users', function (req, res) {
     res.send('lista de usuarios');
@@ -12,7 +13,7 @@ module.exports = function (app, usersRepository, logs) {
     let user = {
       dni: req.body.dni,
       name: req.body.name,
-      surname: req.body.surname,
+      lastName: req.body.lastName,
       password: securePassword,
       role: "EMPLOYEE"
     }
@@ -51,7 +52,7 @@ module.exports = function (app, usersRepository, logs) {
       } else {
         req.session.user = user.dni;
         req.session.name = user.name;
-        req.session.surname = user.surname;
+        req.session.lastName = user.lastName;
         req.session.role = user.role;
         req.session.userId = user._id;
         await logs.logLoginEx(req.session.user);
@@ -60,7 +61,7 @@ module.exports = function (app, usersRepository, logs) {
     }).catch(error => {
       req.session.user = null;
       req.session.name = null;
-      req.session.surname = null;
+      req.session.lastName = null;
       req.session.role = null
       req.session.userId = null;
       res.redirect("error" +
@@ -95,16 +96,25 @@ module.exports = function (app, usersRepository, logs) {
         }
       }
 
-      res.render("employee/list.twig", {
+      res.render("users/list.twig", {
         employees: result.users,
         pages: pages,
         currentPage: page
       });
     } catch (error) {
-      res.render("employee/list.twig", {
+      res.render("users/list.twig", {
         errors: {error: "Se ha producido un error al listar los empleados: " + error.message}
       });
     }
+  });
+
+  app.get('/employee/edit/:id', async (req, res) => {
+    let filter = { _id: new ObjectId(req.params.id) };
+    usersRepository.findUser(filter, {}).then(employee => {
+      res.render("users/edit.twig", { employee: employee });
+    }).catch(error => {
+      res.send("Se ha producido un error al recuperar el empleado " + error);
+    });
   });
 
   app.post('/employee/edit/:id', async (req, res) => {
@@ -112,12 +122,10 @@ module.exports = function (app, usersRepository, logs) {
     let userId;
 
     try {
-      // Convertir id a ObjectId para MongoDB
       userId = new ObjectId(id);
     } catch (error) {
       return res.status(400).send('ID de empleado inválido');
     }
-
     const updatedEmployee = {
       dni: req.body.dni,
       name: req.body.name,
@@ -125,9 +133,7 @@ module.exports = function (app, usersRepository, logs) {
       role: req.body.role
     };
 
-
     const errors = {};
-
 
     if (!updatedEmployee.dni || updatedEmployee.dni.trim() === '') {
       errors.dni = 'El DNI no puede estar vacío';

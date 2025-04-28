@@ -1,10 +1,10 @@
 {% extends "layout.twig" %}
-{% block title %} Vehículos {% endblock %}
+{% block title %} Empleados {% endblock %}
 
 {% block main_container %}
     <div class="container" id="main-container">
-        <h2>{{ i18n.employees_edit_title }}</h2>
-        <form class="form-horizontal" method="post" action="/employee/edit/{{ employee.id }}">
+        <h2>Editar empleados</h2>
+        <form class="form-horizontal" method="post" action="/employee/edit/{{ employee._id }}">
             <div class="form-group">
                 <label class="control-label col-sm-2" for="dni">Dni:</label>
                 <div class="col-sm-10">
@@ -43,7 +43,7 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">{{ i18n.employees_edit_submit }}</button>
+                    <button type="submit" class="btn btn-primary">Modificar</button>
                 </div>
             </div>
         </form>

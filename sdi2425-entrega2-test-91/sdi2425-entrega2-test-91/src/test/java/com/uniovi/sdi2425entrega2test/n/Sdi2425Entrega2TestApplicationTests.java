@@ -232,6 +232,93 @@ class Sdi2425Entrega2TestApplicationTests {
         List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
+    @Test
+    @Order(21)
+    @Transactional
+    public void PR017() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Ver empleados");
+
+        int numEmployees = 16;
+
+        int totalCount = 0;
+        boolean next = true;
+        while (next) {
+            List<WebElement> employeeRows = driver.findElements(By.xpath("//*[@id=\"employeeTable\"]/tbody/tr"));
+            totalCount += employeeRows.size();
+            next = PO_PrivateView.goToNextPage(driver);
+        }
+
+        Assertions.assertEquals(numEmployees, totalCount, "El número de empleados no coincide");
+    }
+
+    @Test
+    @Order(22)
+    @Transactional
+    public void PR018() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+
+        WebElement secondEditLink = driver.findElement(By.xpath("(//table[@id='employeeTable']//a[contains(text(),'Modificar')])[3]"));
+        secondEditLink.click();
+
+        String dni = "58435079Z";
+        String name = "Marcos";
+        String lastName = "Caraduje Martínez";
+        String role = "ROLE_ADMIN";
+
+        PO_PrivateView.filFormEditEmployee(driver, dni, name, lastName);
+
+        WebElement dniElement = driver.findElement(By.id("dni"));
+        Assertions.assertEquals(dni, dniElement.getText());
+
+        WebElement nameElement = driver.findElement(By.id("name"));
+        Assertions.assertEquals(name, nameElement.getText());
+
+        WebElement lastNameElement = driver.findElement(By.id("lastName"));
+        Assertions.assertEquals(lastName, lastNameElement.getText());
+
+        WebElement roleElement = driver.findElement(By.id("role"));
+        Assertions.assertEquals(role, roleElement.getText());
+
+        PO_LoginView.fillForm(driver, dni, "Us3r@2-PASSW");
+
+        String url = driver.getCurrentUrl();
+
+        Assertions.assertTrue(url.contains("/employee/list"));
+    }
+
+    @Test
+    @Order(23)
+    @Transactional
+    public void PR019() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+
+        WebElement secondEditLink = driver.findElement(By.xpath("(//table[@id='employeeTable']//a[contains(text(),'Modificar')])[3]"));
+        secondEditLink.click();
+
+        String dni = "12345678Z";
+        String name = "";
+        String lastName = "";
+
+        PO_PrivateView.filFormEditEmployee(driver, dni, name, lastName);
+
+
+        List<WebElement> resultDni = PO_View.checkElementByKey(driver,  "Error.dni.duplicate" ,PO_Properties.getSPANISH());
+        assertFalse(resultDni.isEmpty());
+
+        List<WebElement> resultName = PO_View.checkElementByKey(driver,  "Error.empty", PO_Properties.getSPANISH());
+        assertFalse(resultName.isEmpty());
+
+        List<WebElement> resultLastName = PO_View.checkElementByKey(driver, "Error.empty", PO_Properties.getSPANISH());
+        assertFalse(resultLastName.isEmpty());
+    }
+
 
     @Test
     @Order(24)
