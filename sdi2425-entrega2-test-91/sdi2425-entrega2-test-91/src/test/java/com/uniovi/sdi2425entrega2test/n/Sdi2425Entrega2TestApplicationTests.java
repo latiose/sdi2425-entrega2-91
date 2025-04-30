@@ -516,6 +516,96 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
+    @Test
+    @Order(39)
+    public void PR037() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"id","repostajes","text","Agregar Repostaje");
+
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", 1.2, 50.0, true, 1000000, "Repostaje de prueba");
+//        String checkText = "1234BCL"; ESTO PARA CUANDO TENGA LA LISTA DE REPOSTAJES
+//        PO_ListView.searchThroughPages(driver, checkText);
+        String checkText = "Repostaje añadido correctamente";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+//        String currentUrl = driver.getCurrentUrl();
+//        assertTrue(currentUrl.contains("/refuels/list"));
+
+    }
+    @Test
+    @Order(40)
+    public void PR038() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S","Us3r@1-PASSW");
+
+        PO_PrivateView.goThroughNav(driver,"id","repostajes","text","Agregar Repostaje");
+
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", 1.2, 50.0, true, 1000000, "Repostaje de prueba");
+        String checkText = "No tienes ningún trayecto en curso";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/refuels/add"));
+    }
+
+    @Test
+    @Order(41)
+    public void PR039() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"id","repostajes","text","Agregar Repostaje");
+        PO_ListView.clickSendButton(driver);
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/refuels/add"));
+    }
+
+    @Test
+    @Order(42)
+    @Transactional
+    public void PR040() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Repostajes","text","Agregar Repostaje");
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", -1.2, -50.0, true, 100000, "Repostaje de prueba");
+
+        String checkText1 = "Formato de cantidad inválido: La cantidad debe de ser un número positivo";
+        String checkText2 = "Formato de precio inválido: El precio debe de ser un número positivo";
+
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText1);
+        Assertions.assertEquals(checkText1, result.get(0).getText());
+
+        List<WebElement> result2 = PO_View.checkElementBy(driver, "text", checkText2);
+        Assertions.assertEquals(checkText2, result2.get(0).getText());
+    }
+
+    @Test
+    @Order(43)
+    @Transactional
+    public void PR041() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver, "text", "Repostajes", "text", "Agregar Repostaje");
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", 1.2, 50.0, true, 100, "Repostaje de prueba");
+
+        String checkText = "El valor del odómetro debe ser superior al del inicio del trayecto";
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
 //    @Test
 //    @Order(37)
 //    public void PR33() {

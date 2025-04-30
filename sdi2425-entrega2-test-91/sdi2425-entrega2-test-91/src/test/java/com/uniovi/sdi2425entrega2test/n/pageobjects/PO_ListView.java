@@ -13,7 +13,7 @@ public class PO_ListView extends PO_NavView{
     static public void fillFormAddRefuel(WebDriver driver, String stationp, double pricep, double amountp,
                                          boolean fullTankp, double odometerp, String commentsp)
     {
-        WebElement stationInput = driver.findElement(By.id("station"));
+        WebElement stationInput = driver.findElement(By.id("stationName"));
         stationInput.clear();
         stationInput.sendKeys(stationp);
 
@@ -26,11 +26,8 @@ public class PO_ListView extends PO_NavView{
         amountInput.sendKeys(String.valueOf(amountp));
 
         WebElement fullTankInput = driver.findElement(By.id("fullTank"));
-        if (fullTankp && !fullTankInput.isSelected()) {
+        if (fullTankp && !fullTankInput.isSelected() || !fullTankp && fullTankInput.isSelected())
             fullTankInput.click();
-        } else if (!fullTankp && fullTankInput.isSelected()) {
-            fullTankInput.click();
-        }
 
         WebElement odometerInput = driver.findElement(By.id("odometer"));
         odometerInput.clear();

@@ -38,6 +38,14 @@
             <li><a href="/journeys/vehicle/firstVehicle">Historial de trayectos de un vehículo</a></li>
           </ul>
         </li>
+          <li id="repostajes" class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              Repostajes <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/refuels/add">Agregar Repostaje</a></li>
+            </ul>
+          </li>
           {% if user and user.role == 'ADMIN' %}
             <li id="vehiculos" class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

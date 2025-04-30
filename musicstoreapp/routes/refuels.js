@@ -56,7 +56,7 @@ module.exports = function(app, refuelsRepository, journeysRepository) {
                 return;
             }
             await refuelsRepository.insertRefuel(refuel);
-            res.send('Repostaje añadido: ' + refuel.stationName);
+            res.send('Repostaje añadido correctamente');
             // res.redirect('/refuels/list');
         } catch (error) {
             console.error(error);
