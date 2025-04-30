@@ -44,8 +44,8 @@
                               </td>
                               <td>
                                     <button type="button" class="btn btn-primary" id="boton-add"
-                                    onclick="widgetJourneysVehicle('${vehicle._id}')">
-                                    Ver trayectos
+                                    onclick="widgetAddJourney('${vehicle.numberPlate}')">
+                                    Añadir trayecto
                                     </button>
                               </td>
                             </tr>
@@ -59,9 +59,15 @@
     }
 
 
-    function widgetJourneysVehicle(vehicleId) {
-        $("#main-container").load("widget-journeys-vehicle.html", function () {
-            $("#selectVehicle").val(vehicleId).change();
+    function widgetAddJourney(numberPlate) {
+        $("#main-container").load("widget-add-journey.html", function () {
+            const checkComboInterval = setInterval(function() {
+                const combo = $("#numberPlate");
+                if (combo.find("option").length > 1) {
+                    combo.val(numberPlate);
+                    clearInterval(checkComboInterval);
+                }
+            }, 100);
         });
     }
 

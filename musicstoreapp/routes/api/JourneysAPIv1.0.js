@@ -94,5 +94,22 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
         }
     });
 
+    app.get('/api/v1.0/journeys/user', async function(req, res) {
+        try {
+            let token = req.headers['token'];
+            let decodedToken = app.get('jwt').verify(token, "secreto");
 
+            const user = await usersRepository.findUser({dni: req.session.userId});
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado.' });
+            }
+
+            const journeys = await journeysRepository.findJourney({employeeId:
+                new ObjectId(user._id)});
+            res.json(journeys);
+
+        } catch (error) {
+            res.status(500).json({ error: 'Error al obtener los trayectos: ' + error.message });
+        }
+    });
 }
