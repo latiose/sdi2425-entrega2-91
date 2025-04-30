@@ -1,0 +1,62 @@
+<div id="widget-journeys">
+    <div class="form-group">
+        <h2>Mis trayectos</h2>
+    </div>
+
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th>Fecha de inicio</th>
+            <th>Vehículo</th>
+            <th>Duración</th>
+            <th>Distancia recorrida</th>
+        </tr>
+        </thead>
+        <tbody id="journeysTableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    function loadUserJourneys() {
+        $.ajax({
+            url: URLbase + "/journeys/user",
+            type: "GET",
+            headers: { "token": token },
+            success: function(journeys) {
+                let tbody = $("#journeysTableBody");
+                tbody.empty();
+                journeys.forEach(function(journey) {
+                    let start = new Date(journey.startDate);
+                    let startStr = start.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+
+                    let duracion = "En progreso";
+                    let distancia = "En progreso";
+
+                    if (journey.endDate) {
+                        let durMin = journey.duration || 0;
+                        let horas = Math.floor(durMin / 60);
+                        let minutos = durMin % 60;
+                        duracion = `${horas}h ${minutos}m`;
+                        distancia = (journey.odometerEnd - journey.odometerStart) + " km";
+                    }
+
+                    tbody.append(`
+                    <tr>
+                        <td>${startStr}</td>
+                        <td>${journey.vehiclePlate}</td>
+                        <td>${duracion}</td>
+                        <td>${distancia}</td>
+                    </tr>
+                `);
+                });
+            },
+            error: function() {
+                alert("Error al cargar trayectos del usuario.");
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        loadUserJourneys();
+    });
+</script>
