@@ -58,7 +58,7 @@ module.exports = {
 
             const result = await usersCollection.updateOne(
                 {_id: userId},
-                {user: updatedUser}
+                {$set: updatedUser}
             );
 
             return result;
