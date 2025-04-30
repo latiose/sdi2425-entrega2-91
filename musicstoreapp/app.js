@@ -71,6 +71,7 @@ const userTokenRouter = require('./routes/userTokenRouter');
 //app.use("/api/v1.0/journeys/", userTokenRouter);
 //app.use("/api/v1.0/vehicles/", userTokenRouter);
 app.use("/songs/add",userSessionRouter);
+app.use("/refuels", userSessionRouter);
 app.use("/publications",userSessionRouter);
 app.use("/songs/buy",userSessionRouter);
 app.use("/purchases",userSessionRouter);
@@ -99,9 +100,12 @@ const usersRepository = require("./repositories/usersRepository.js");
 let vehiclesRepository = require("./repositories/vehiclesRepository.js")
 let journeysRepository = require("./repositories/journeysRepository.js")
 vehiclesRepository.init(app, dbClient);
-journeysRepository.init(app,dbClient)
+journeysRepository.init(app,dbClient);
+let refuelsRepository = require("./repositories/refuelsRepository.js");
+refuelsRepository.init(app,dbClient);
 
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
+require("./routes/refuels.js")(app, refuelsRepository, journeysRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/UserAPIv1.0.js")(app,usersRepository);
