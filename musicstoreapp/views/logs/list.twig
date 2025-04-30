@@ -1,87 +1,62 @@
 {% extends "layout.twig" %}
-{% block title %}Logs{% endblock %}
+
+{% block title %} Lista de Logs {% endblock %}
 
 {% block main_container %}
-    <div class="container">
-        <h2>Lista de logs</h2>
+    <div class="container" id="main-container">
+        <h2>Registros de logs</h2>
 
-        {% if error %}
-            <div class="alert alert-danger">
-                <p>{{ error }}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <form method="get" action="/logs/list" class="form-inline">
+                    <div class="form-group">
+                        <label for="type">Filtrar por tipo:</label>
+                        <select id="type" name="type" class="form-control ml-2">
+                            <option value="all" {% if selectedType == "all" %}selected{% endif %}>Todos</option>
+                            {% for type in logTypes %}
+                                <option value="{{ type }}" {% if selectedType == type %}selected{% endif %}>{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary ml-2">Filtrar</button>
+                </form>
             </div>
-        {% endif %}
 
-        <div class="row mb-3">
-            <div class="col-sm-4">
-                <select id="logTypeFilter" class="form-control" name="logType">
-                    {% for type in logTypes %}
-                        <option value="{{ type }}"
-                                {% if type == selectedType %}selected{% endif %}>
-                            {{ type }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <button id="deleteLogsBtn" class="btn btn-danger">Eliminar</button>
-            </div>
+            {% if selectedType and selectedType != "all" %}
+                <div class="col-md-6 text-right">
+                    <form method="post" action="/logs/delete" onsubmit="return confirm('¿Estás seguro de querer eliminar todos los logs de tipo {{ selectedType }}?');">
+                        <input type="hidden" name="type" value="{{ selectedType }}">
+                        <button type="submit" class="btn btn-danger">Eliminar logs de tipo "{{ selectedType }}"</button>
+                    </form>
+                </div>
+            {% endif %}
         </div>
 
-        <div class="table-responsive">
-            {% if logs and logs.length > 0 %}
-                <table class="table table-hover" id="logsTable">
-                    <thead>
-                    <tr>
-                        <th>{{ i18n.logs_datetime }}</th>
-                        <th>{{ i18n.logs_type }}</th>
-                        <th>{{ i18n.logs_description }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Fecha y Hora</th>
+                    <th>Descripción</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if logs.length > 0 %}
                     {% for log in logs %}
                         <tr>
-                            <td>{{ log.timestamp|date('d-m-Y H:i:s') }}</td>
-                            <td>{{ log.logType }}</td>
+                            <td>{{ log.type }}</td>
+                            <td>{{ log.timestamp | date('d/m/Y H:i:s') }}</td>
                             <td>{{ log.description }}</td>
                         </tr>
                     {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="alert alert-info">No hay logs en el sistema</div>
-            {% endif %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">No se encontraron registros de logs</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            // Cambiar tipo de log
-            $('#logTypeFilter').change(function() {
-                window.location.href = '/logs/list?type=' + $(this).val();
-            });
-
-            // Eliminar logs del tipo seleccionado
-            $('#deleteLogsBtn').click(function() {
-                if (confirm('¿Está seguro de que desea eliminar estos logs?')) {
-                    let type = $('#logTypeFilter').val();
-                    $.ajax({
-                        url: '/logs/delete',
-                        type: 'POST',
-                        data: { type: type },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                location.reload();
-                            } else {
-                                alert('Error al eliminar los logs: ' + response.error);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            alert('Error en la solicitud: ' + error);
-                        }
-                    });
-                }
-            });
-        });
-    </script>
 {% endblock %}
