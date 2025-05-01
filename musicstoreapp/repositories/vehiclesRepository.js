@@ -117,5 +117,16 @@ module.exports = {
         } catch (error) {
             throw error;
         }
+    },getVehicleById: async function(id) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const vehiclesCollection = database.collection(this.collectionName);
+            const { ObjectId } = require("mongodb");
+            return await vehiclesCollection.findOne({ _id: new ObjectId(id) });
+        } catch (error) {
+            throw error;
+        }
     }
+
 };
