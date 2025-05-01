@@ -9,7 +9,16 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
         }
 
         try {
-            const employeeId = req.session.userId;
+            let token = req.headers['token'];
+            let decodedToken = app.get('jwt').verify(token, "secreto");
+            const userDni = decodedToken.user;
+
+            const employee = await usersRepository.findUser({ dni: userDni });
+            if (!employee) {
+                return res.status(500).json({ error: 'No se pudo recuperar el usuario actual.' });
+            }
+
+            const employeeId = employee._id;
 
             const ongoingJourney = await journeysRepository.findOngoingJourneyByEmployee(employeeId);
             if (ongoingJourney) {
@@ -32,18 +41,13 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
                 odometerStart = lastJourney.odometerEnd;
             }
 
-            const employee = await usersRepository.findUser({ _id: new ObjectId(employeeId) });
-            if (!employee) {
-                return res.status(500).json({ error: 'No se pudo recuperar el usuario actual.' });
-            }
-
             let journey = {
                 startDate: new Date(),
                 odometerStart: odometerStart,
                 vehicleId: new ObjectId(existingVehicle._id),
                 vehiclePlate: numberPlate,
                 employeeId: new ObjectId(employeeId),
-                driverName: employee.dni
+                driverName: userDni
             };
 
             const insertResult = await journeysRepository.insertJourney(journey);
@@ -60,9 +64,11 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
             });
 
         } catch (error) {
+            console.error("Error al iniciar trayecto:", error);
             res.status(500).json({ error: 'Error al iniciar trayecto: ' + error.message });
         }
     });
+
 
     app.get('/api/v1.0/journeys/vehicle/:id', async function(req, res) {
         try {
@@ -82,14 +88,16 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
             }
 
             const journeys = await journeysRepository.getJourneysByVehicle(new ObjectId(vehicleId));
-
+            const vehicle = await vehiclesRepository.getVehicleById(vehicleId);
             res.json({
                 vehicles,
                 journeys,
-                currentVehicleId: vehicleId
+                currentVehicleId: vehicleId,
+                status:vehicle.status,
             });
 
         } catch (error) {
+            console.log(error.message)
             res.status(500).json({ error: 'Error al obtener los trayectos del vehículo: ' + error.message });
         }
     });

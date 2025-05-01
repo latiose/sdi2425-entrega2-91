@@ -78,9 +78,11 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
 
             await vehiclesRepository.updateVehicle(
                 { _id: journey.vehicleId },
-                { $set: { status: "LIBRE", mileage: odometer } }
+                {
+                    $set: { status: "LIBRE" },
+                    $inc: { mileage: odometer }
+                }
             );
-
 
             await journeysRepository.completeJourney(new ObjectId(id), odometer, comments);
 

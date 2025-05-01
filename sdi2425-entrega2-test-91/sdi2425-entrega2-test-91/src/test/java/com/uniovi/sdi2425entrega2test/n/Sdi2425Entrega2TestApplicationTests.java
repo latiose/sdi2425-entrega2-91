@@ -2,6 +2,7 @@ package com.uniovi.sdi2425entrega2test.n;
 
 import com.uniovi.sdi2425entrega2test.n.pageobjects.PO_HomeView;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.simple.JSONObject;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -636,6 +638,67 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
 */
+
+    @Test
+    @Order(11)
+    public void PRApiRestTest() {
+        final String RestAssuredURL = "http://localhost:8081/api/v1.0/songs";
+        Response response = RestAssured.get(RestAssuredURL);
+        Assertions.assertEquals(403, response.getStatusCode());
+    }
+
+    @Test
+    @Order(43)
+    public void PR043() {
+
+        String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
+
+        JSONObject journeyBody = new JSONObject();
+        journeyBody.put("numberPlate", "4567CRD");
+
+        Response journeyResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header("token", token)
+                .body(journeyBody.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/journeys/add");
+        assertEquals(201, journeyResponse.getStatusCode());
+        assertTrue(journeyResponse.jsonPath().getString("journeyId") != null);
+        String vehicleId = journeyResponse.jsonPath().getString("vehicleId");
+
+        Response vehicleResponse = RestAssured.given()
+                .header("token", token)
+                .when()
+                .get("http://localhost:8081/api/v1.0/journeys/vehicle/" + vehicleId);
+
+        assertEquals(200, vehicleResponse.getStatusCode());
+        assertEquals("OCUPADO", vehicleResponse.jsonPath().getString("status"));
+    }
+
+
+    @Test
+    @Order(44)
+    public void PR044() {
+        String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
+
+        String knownVehicleId = "67f78c358c8c58e3e50db18a";
+
+        Response journeysResponse = RestAssured.given()
+                .header("token", token)
+                .when()
+                .get("http://localhost:8081/api/v1.0/journeys/vehicle/" + knownVehicleId);
+
+        assertEquals(200, journeysResponse.getStatusCode());
+
+        assertNotNull(journeysResponse.jsonPath().getList("vehicles"));
+
+        assertNotNull(journeysResponse.jsonPath().getList("journeys"));
+
+        assertEquals(knownVehicleId, journeysResponse.jsonPath().getString("currentVehicleId"));
+    }
+
+
+
 
 }
 

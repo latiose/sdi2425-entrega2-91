@@ -1,5 +1,9 @@
 package com.uniovi.sdi2425entrega2test.n.pageobjects;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -42,5 +46,22 @@ public class PO_LoginView extends PO_NavView {
 		fillLoginForm(driver, user, password);
 		//Comprobamos que entramos en la pagina privada del Profesor
 		checkElementBy(driver, "text", checkText);
+	}
+
+	public static String loginApi(String dni, String password) {
+		JSONObject loginBody = new JSONObject();
+		loginBody.put("dni", dni);
+		loginBody.put("password", password);
+
+		Response response = RestAssured.given()
+				.contentType(ContentType.JSON)
+				.body(loginBody.toString())
+				.when()
+				.post("http://localhost:8081/api/v1.0/users/login");
+
+		if (response.getStatusCode() == 200) {
+			return response.jsonPath().getString("token");
+		}
+		return null;
 	}
 }

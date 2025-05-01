@@ -5,7 +5,7 @@ module.exports = function (app,usersRepository) {
             let securePassword = app.get("crypto").createHmac('sha256', app.get('clave'))
                 .update(req.body.password).digest('hex');
             let filter = {
-                email: req.body.email,
+                dni: req.body.dni,
                 password: securePassword
             }
             let options = {};
@@ -18,7 +18,7 @@ module.exports = function (app,usersRepository) {
                     })
                 } else {
                     let token = app.get('jwt').sign(
-                        {user: user.email, time: Date.now() / 1000},
+                        {user: user.dni, time: Date.now() / 1000},
                         "secreto");
                     res.status(200);
                     res.json({
