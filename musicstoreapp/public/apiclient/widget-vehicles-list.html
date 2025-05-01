@@ -52,8 +52,13 @@
                     `);
                 });
             },
-            error: function () {
-                alert("Error al cargar vehículos.");
+            error: function (response) {
+                if (response.status === 401) {
+                    alert(response.responseJSON.error);
+                    $("#main-container").load("widget-login.html");
+                } else {
+                    alert("Error al cargar vehículos.");
+                }
             }
         });
     }

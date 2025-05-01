@@ -34,12 +34,12 @@ module.exports = {
         }
     },
 
-    getAllJourneys: async function() {
+    getAllJourneys: async function(filter, options) {
         try {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const journeysCollection = database.collection(this.collectionName);
-            return await journeysCollection.find({}).toArray();
+            return await journeysCollection.find(filter || {}).toArray();
         } catch (error) {
             throw error;
         }

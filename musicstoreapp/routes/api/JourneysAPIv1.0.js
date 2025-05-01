@@ -105,17 +105,22 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
     app.get('/api/v1.0/journeys/user', async function(req, res) {
         try {
             let token = req.headers['token'];
+            if (!token) {
+                return res.status(401).json({
+                    error: 'Debes estar identificado para ver  tu lista de trayectos'
+                });
+            }
             let decodedToken = app.get('jwt').verify(token, "secreto");
 
-            const user = await usersRepository.findUser({dni: req.session.userId});
+            const user = await usersRepository.findUser({dni: decodedToken.user});
             if (!user) {
-                return res.status(404).json({ error: 'Usuario no encontrado.' });
+                return res.status(500).json({ error: 'No se pudo recuperar el usuario actual.' });
             }
 
-            const journeys = await journeysRepository.findJourney({employeeId:
+            const journeys = await journeysRepository.getAllJourneys({employeeId:
                 new ObjectId(user._id)});
+            journeys.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
             res.json(journeys);
-
         } catch (error) {
             res.status(500).json({ error: 'Error al obtener los trayectos: ' + error.message });
         }

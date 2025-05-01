@@ -19,6 +19,7 @@ import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -519,8 +520,98 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
     @Test
-    @Order(38)
+    @Order(39)
+    public void PR037() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"id","repostajes","text","Agregar Repostaje");
+
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", 1.2, 50.0, true, 1000000, "Repostaje de prueba");
+//        String checkText = "1234BCL"; ESTO PARA CUANDO TENGA LA LISTA DE REPOSTAJES
+//        PO_ListView.searchThroughPages(driver, checkText);
+        String checkText = "Repostaje añadido correctamente";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+//        String currentUrl = driver.getCurrentUrl();
+//        assertTrue(currentUrl.contains("/refuels/list"));
+
+    }
+    @Test
+    @Order(40)
     public void PR038() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S","Us3r@1-PASSW");
+
+        PO_PrivateView.goThroughNav(driver,"id","repostajes","text","Agregar Repostaje");
+
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", 1.2, 50.0, true, 1000000, "Repostaje de prueba");
+        String checkText = "No tienes ningún trayecto en curso";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/refuels/add"));
+    }
+
+    @Test
+    @Order(41)
+    public void PR039() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"id","repostajes","text","Agregar Repostaje");
+        PO_ListView.clickSendButton(driver);
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/refuels/add"));
+    }
+
+    @Test
+    @Order(42)
+    @Transactional
+    public void PR040() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Repostajes","text","Agregar Repostaje");
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", -1.2, -50.0, true, 100000, "Repostaje de prueba");
+
+        String checkText1 = "Formato de cantidad inválido: La cantidad debe de ser un número positivo";
+        String checkText2 = "Formato de precio inválido: El precio debe de ser un número positivo";
+
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText1);
+        Assertions.assertEquals(checkText1, result.get(0).getText());
+
+        List<WebElement> result2 = PO_View.checkElementBy(driver, "text", checkText2);
+        Assertions.assertEquals(checkText2, result2.get(0).getText());
+    }
+
+    @Test
+    @Order(43)
+    @Transactional
+    public void PR041() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver, "text", "Repostajes", "text", "Agregar Repostaje");
+        PO_ListView.fillFormAddRefuel(driver, "Repsol", 1.2, 50.0, true, 100, "Repostaje de prueba");
+
+        String checkText = "El valor del odómetro debe ser superior al del inicio del trayecto";
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(38)
+    public void PR043() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "10000001S", "Us3r@1-PASSW");
 
@@ -577,8 +668,30 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 */
     @Test
-    @Order(43)
-    public void PR043() {
+    @Order(45)
+    public void PR047() {
+        String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
+
+        Response vehiclesResponse = RestAssured.given()
+                .header("token", token)
+                .when()
+                .get("http://localhost:8081/api/v1.0/vehicles/available");
+
+        assertEquals(200, vehiclesResponse.getStatusCode());
+
+        List<Object> vehicles = vehiclesResponse.jsonPath().getList("");
+        assertNotNull(vehicles);
+        assertFalse(vehicles.isEmpty());
+        assertEquals(18, vehicles.size()); // 18 vehículos disponibles ya que uno está ocupado
+        for (Object vehicleObj : vehicles) {
+            Map<String,Object> vehicle = (Map<String,Object>)vehicleObj;
+            assertEquals("LIBRE", vehicle.get("status"));
+        }
+    }
+
+    @Test
+    @Order(46)
+    public void PR048() {
 
         String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
 
@@ -606,8 +719,8 @@ class Sdi2425Entrega2TestApplicationTests {
 
 
     @Test
-    @Order(44)
-    public void PR044() {
+    @Order(47)
+    public void PR049() {
         String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
 
         String knownVehicleId = "67f78c358c8c58e3e50db18a";
@@ -626,8 +739,24 @@ class Sdi2425Entrega2TestApplicationTests {
         assertEquals(knownVehicleId, journeysResponse.jsonPath().getString("currentVehicleId"));
     }
 
+    @Test
+    @Order(50)
+    public void PR050() {
+        String token = PO_LoginView.loginApi("12345678Z", "@Dm1n1str@D0r");
+        assertNotNull(token);
 
+        Response journeysResponse = RestAssured.given()
+                .header("token", token)
+                .when()
+                .get("http://localhost:8081/api/v1.0/journeys/user");
 
+        assertEquals(200, journeysResponse.getStatusCode());
+
+        List<Object> journeys = journeysResponse.jsonPath().getList("");
+        assertNotNull(journeys);
+
+        assertEquals(193, journeys.size());
+    }
 
 }
 
