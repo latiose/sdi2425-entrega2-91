@@ -229,7 +229,7 @@ module.exports = async function initializeDatabase(client) {
                 "model": "UX 250h",
                 "fuelType": "Híbrido",
                 "mileage": 16000,
-                "status": "LIBRE"
+                "status": "OCUPADO"
             }
         ]);
 
