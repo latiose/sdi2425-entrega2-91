@@ -55,9 +55,9 @@
             error: function (response) {
                 if (response.status === 401) {
                     alert(response.responseJSON.error);
-                    window.location.href = '/login.html';
+                    $("#main-container").load("widget-login.html");
                 } else {
-                    alert("Error al cargar vehículos: " + response.responseJSON.error);
+                    alert("Error al cargar vehículos.");
                 }
             }
         });

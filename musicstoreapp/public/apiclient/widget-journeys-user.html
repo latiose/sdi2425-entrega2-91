@@ -23,9 +23,20 @@
             type: "GET",
             headers: { "token": token },
             success: function(journeys) {
+                console.log("Received journeys:", journeys);
                 let tbody = $("#journeysTableBody");
                 tbody.empty();
-                journeys.forEach(function(journey) {
+
+                const journeyArray = Array.isArray(journeys) ? journeys : [journeys];
+                if (!journeyArray || journeyArray.length === 0) {
+                    tbody.append(`
+                    <tr>
+                        <td colspan="4">No hay trayectos disponibles</td>
+                    </tr>
+                `);
+                    return;
+                }
+                journeyArray.forEach(function(journey) {
                     let start = new Date(journey.startDate);
                     let startStr = start.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 
@@ -50,8 +61,13 @@
                 `);
                 });
             },
-            error: function() {
-                alert("Error al cargar trayectos del usuario.");
+            error: function (response) {
+                if (response.status === 401) {
+                    alert(response.responseJSON.error);
+                    $("#main-container").load("widget-login.html");
+                } else {
+                    alert("Error al cargar los trayectos del usuario.");
+                }
             }
         });
     }

@@ -19,6 +19,7 @@ import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -648,8 +649,30 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
     @Test
-    @Order(43)
-    public void PR043() {
+    @Order(45)
+    public void PR047() {
+        String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
+
+        Response vehiclesResponse = RestAssured.given()
+                .header("token", token)
+                .when()
+                .get("http://localhost:8081/api/v1.0/vehicles/available");
+
+        assertEquals(200, vehiclesResponse.getStatusCode());
+
+        List<Object> vehicles = vehiclesResponse.jsonPath().getList("");
+        assertNotNull(vehicles);
+        assertFalse(vehicles.isEmpty());
+        assertEquals(19, vehicles.size());
+        for (Object vehicleObj : vehicles) {
+            Map<String,Object> vehicle = (Map<String,Object>)vehicleObj;
+            assertEquals("LIBRE", vehicle.get("status"));
+        }
+    }
+
+    @Test
+    @Order(46)
+    public void PR048() {
 
         String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
 
@@ -677,8 +700,8 @@ class Sdi2425Entrega2TestApplicationTests {
 
 
     @Test
-    @Order(44)
-    public void PR044() {
+    @Order(47)
+    public void PR049() {
         String token = PO_LoginView.loginApi("10000001S","Us3r@1-PASSW");
 
         String knownVehicleId = "67f78c358c8c58e3e50db18a";
@@ -697,8 +720,24 @@ class Sdi2425Entrega2TestApplicationTests {
         assertEquals(knownVehicleId, journeysResponse.jsonPath().getString("currentVehicleId"));
     }
 
+    @Test
+    @Order(50)
+    public void PR050() {
+        String token = PO_LoginView.loginApi("12345678Z", "@Dm1n1str@D0r");
+        assertNotNull(token);
 
+        Response journeysResponse = RestAssured.given()
+                .header("token", token)
+                .when()
+                .get("http://localhost:8081/api/v1.0/journeys/user");
 
+        assertEquals(200, journeysResponse.getStatusCode());
+
+        List<Object> journeys = journeysResponse.jsonPath().getList("");
+        assertNotNull(journeys);
+
+        assertEquals(193, journeys.size());
+    }
 
 }
 
