@@ -107,7 +107,7 @@ module.exports = function (app, journeysRepository, usersRepository, vehiclesRep
             let token = req.headers['token'];
             let decodedToken = app.get('jwt').verify(token, "secreto");
 
-            const user = await usersRepository.findUser({dni: req.session.userId});
+            const user = await usersRepository.findUser({dni: decodedToken.user});
             if (!user) {
                 return res.status(404).json({ error: 'Usuario no encontrado.' });
             }
