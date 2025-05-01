@@ -611,7 +611,7 @@ class Sdi2425Entrega2TestApplicationTests {
 
     @Test
     @Order(38)
-    public void PR038() {
+    public void PR043() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "10000001S", "Us3r@1-PASSW");
 
@@ -682,7 +682,7 @@ class Sdi2425Entrega2TestApplicationTests {
         List<Object> vehicles = vehiclesResponse.jsonPath().getList("");
         assertNotNull(vehicles);
         assertFalse(vehicles.isEmpty());
-        assertEquals(19, vehicles.size());
+        assertEquals(18, vehicles.size()); // 18 vehículos disponibles ya que uno está ocupado
         for (Object vehicleObj : vehicles) {
             Map<String,Object> vehicle = (Map<String,Object>)vehicleObj;
             assertEquals("LIBRE", vehicle.get("status"));

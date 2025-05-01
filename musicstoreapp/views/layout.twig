@@ -46,7 +46,7 @@
               <li><a href="/refuels/add">Agregar Repostaje</a></li>
             </ul>
           </li>
-          {% if user and user.role == 'ADMIN' %}
+          {% if user %}
             <li id="vehiculos" class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 Vehículos <span class="caret"></span>

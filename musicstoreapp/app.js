@@ -103,11 +103,11 @@ journeysRepository.init(app,dbClient);
 let refuelsRepository = require("./repositories/refuelsRepository.js");
 refuelsRepository.init(app,dbClient);
 vehiclesRepository.init(app, dbClient);
-journeysRepository.init(app,dbClient)
+journeysRepository.init(app,dbClient);
+usersRepository.init(app, dbClient);
 
-require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/refuels.js")(app, refuelsRepository, journeysRepository);
-require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository,usersRepository);
+require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository, usersRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/UserAPIv1.0.js")(app,usersRepository);
