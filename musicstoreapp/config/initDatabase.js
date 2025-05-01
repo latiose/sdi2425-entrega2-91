@@ -30,7 +30,7 @@ module.exports = async function initializeDatabase(client) {
                 password: hashPassword("@Dm1n1str@D0r", clave),
                 role: "ADMIN"
             }
-        ];//
+        ];
 
         for (let i = 1; i <= 15; i++) {
             const numDni = 10000000 + i;
@@ -838,7 +838,7 @@ module.exports = async function initializeDatabase(client) {
                 "odometerEnd": 117015
             },
             {
-                "startDate": new Date("2025-03-23T12:15:00.332639Z"),
+                "startDate": new Date(),
                 "odometerStart": 116941,
                 "vehicleId": new ObjectId("67f78bfbeb4480ef31b369f4"),
                 "vehiclePlate": "1234BCD",
