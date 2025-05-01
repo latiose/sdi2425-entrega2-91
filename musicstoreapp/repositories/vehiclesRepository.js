@@ -86,6 +86,24 @@ module.exports = {
             throw error;
         }
     },
+    getVehiclesNotUsedPaginated: async function(page) {
+        try {
+            const limit = 5;
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const vehiclesCollection = database.collection(this.collectionName);
+            const filter = { status: "LIBRE" };
+            const totalVehicles = await vehiclesCollection.countDocuments(filter);
+            const cursor = vehiclesCollection.find(filter)
+                .skip((page - 1) * limit)
+                .limit(limit);
+            const vehicles = await cursor.toArray();
+
+            return { vehicles: vehicles, total: totalVehicles };
+        } catch (error) {
+            throw error;
+        }
+    },
     updateVehicle: async function(filter, update, options = {}) {
         try {
             await this.dbClient.connect();

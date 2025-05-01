@@ -4,7 +4,7 @@ const validFuelTypes = ['Gasolina', 'Diésel', 'Microhíbrido',
 
 const { ObjectId } = require('mongodb');
 
-module.exports = function(app, vehiclesRepository, journeyRepository) {
+module.exports = function(app, vehiclesRepository, journeyRepository,usersRepository) {
 
     app.get('/vehicles/add', function (req, res) {
         res.render("vehicles/add.twig", {
@@ -93,7 +93,14 @@ module.exports = function(app, vehiclesRepository, journeyRepository) {
     app.get('/vehicles/list', async function(req, res) {
         let page = parseInt(req.query.page) || 1;
         try {
-            const result = await vehiclesRepository.getVehiclesPaginated(page);
+            const user = await usersRepository.findUser({_id: new ObjectId(req.session.userId)},{});
+            let result;
+            if(user.role==="ADMIN") {
+                result = await vehiclesRepository.getVehiclesPaginated(page);
+            }
+            else{
+                result = await vehiclesRepository.getVehiclesNotUsedPaginated(page);
+            }
 
             let lastPage = Math.ceil(result.total / 5);
             if (result.total % 5 === 0 && result.total > 0) {
@@ -108,7 +115,7 @@ module.exports = function(app, vehiclesRepository, journeyRepository) {
             res.render("vehicles/list.twig", {
                 vehicles: result.vehicles,
                 pages: pages,
-                currentPage: page
+                currentPage: page,
             });
         } catch (error) {
             res.render("vehicles/list.twig", {

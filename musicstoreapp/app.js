@@ -87,7 +87,7 @@ app.use("/songs/delete",userAuthorRouter);
 const adminSessionRouter = require('./routes/adminSessionRouter');
 app.use("/users/signup", adminSessionRouter);
 app.use("/vehicles/add", adminSessionRouter);
-app.use("/vehicles/list", adminSessionRouter);
+app.use("/vehicles/list", userSessionRouter);
 app.use("/logs/", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -99,13 +99,15 @@ songsRepository.init(app, dbClient);
 const usersRepository = require("./repositories/usersRepository.js");
 let vehiclesRepository = require("./repositories/vehiclesRepository.js")
 let journeysRepository = require("./repositories/journeysRepository.js")
-vehiclesRepository.init(app, dbClient);
 journeysRepository.init(app,dbClient);
 let refuelsRepository = require("./repositories/refuelsRepository.js");
 refuelsRepository.init(app,dbClient);
+vehiclesRepository.init(app, dbClient);
+journeysRepository.init(app,dbClient)
 
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository);
 require("./routes/refuels.js")(app, refuelsRepository, journeysRepository);
+require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository,usersRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/UserAPIv1.0.js")(app,usersRepository);

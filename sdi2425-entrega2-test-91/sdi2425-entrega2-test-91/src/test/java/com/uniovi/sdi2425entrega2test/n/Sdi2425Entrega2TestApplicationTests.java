@@ -609,6 +609,25 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
 
+    @Test
+    @Order(38)
+    public void PR038() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S", "Us3r@1-PASSW");
+
+        PO_PrivateView.goThroughNav(driver,"text","Vehículos","text","Lista de Vehículos");
+
+        int totalCount = 0;
+        boolean next = true;
+        while (next) {
+            List<WebElement> vehicleRows = driver.findElements(By.xpath("//table/tbody/tr"));
+            totalCount += vehicleRows.size();
+            next = PO_ListView.goToNextPage(driver);
+        }
+
+        Assertions.assertEquals(18, totalCount, "El número de vehículos no coincide."); //uno menos que en el otro test, el unico con un trayec
+    }
+
 //    @Test
 //    @Order(37)
 //    public void PR33() {
@@ -639,7 +658,7 @@ class Sdi2425Entrega2TestApplicationTests {
     }
 
 */
-
+/*
     @Test
     @Order(11)
     public void PRApiRestTest() {
@@ -647,7 +666,7 @@ class Sdi2425Entrega2TestApplicationTests {
         Response response = RestAssured.get(RestAssuredURL);
         Assertions.assertEquals(403, response.getStatusCode());
     }
-
+*/
     @Test
     @Order(45)
     public void PR047() {

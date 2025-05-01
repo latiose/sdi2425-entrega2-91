@@ -11,6 +11,7 @@
             </div>
         {% endif %}
 
+        {% if user.role == "ADMIN" %}
         <form id="delete-form" method="post" action="/vehicles/delete">
             <button type="submit" class="btn btn-danger mb-3" id="deleteButton">
                 Eliminar
@@ -51,6 +52,38 @@
                 </table>
             </div>
         </form>
+        {% endif %}
+
+        {% if user.role == "EMPLOYEE" %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Matrícula</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Kilometraje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ vehicle.numberPlate }}</td>
+                            <td>{{ vehicle.brand }}</td>
+                            <td>{{ vehicle.model }}</td>
+                            <td>{{ vehicle.mileage }} km</td>
+                           <td>
+                               <a href="/journeys/vehicle/{{ vehicle._id }}" class="btn btn-sm btn-info">Ver trayectos del vehículo</a>
+                           </td>
+                            <td>
+                                <a href="/journeys/vehicle/{{ vehicle._id }}" class="btn btn-sm btn-info">Ver repostajes del vehículo</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
         <div class="row text-center">
             <ul class="pagination">
                 {% for page in pages %}
