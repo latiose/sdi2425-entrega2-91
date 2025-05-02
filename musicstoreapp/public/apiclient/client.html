@@ -83,9 +83,7 @@
 
     function logoutAndRedirect() {
       logout();
-      setTimeout(function() {
-        window.location.href = "http://localhost:8081/";
-      }, 200);
+      window.location.href = "http://localhost:8081/";
     }
     function loadInitialWidget() {
         let url = new URL(window.location.href);

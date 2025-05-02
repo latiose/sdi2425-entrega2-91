@@ -872,18 +872,41 @@ module.exports = async function initializeDatabase(client) {
 
         const journeysToUpdate = await journeysCollection.find({}).toArray();
 
-        for (const journey of journeysToUpdate) {
+        const eligibleUsers = users.slice(0, -1);
+        const totalEligible = eligibleUsers.length;
+        let userIndex = 0;
+
+
+        for (let i = 0; i < journeysToUpdate.length - 1; i++) {
+            const journey = journeysToUpdate[i];
+            const currentUser = eligibleUsers[userIndex];
+
             await journeysCollection.updateOne(
                 { _id: journey._id },
                 {
                     $set: {
-                        driverName: "12345678Z",
-                        employeeId: adminId,
+                        driverName: currentUser.dni,
+                        employeeId: currentUser._id
                     }
                 }
             );
+
+            userIndex = (userIndex + 1) % totalEligible;
         }
 
+        const adminUser = await usersCollection.findOne({ role: "ADMIN" });
+
+        const lastJourney = journeysToUpdate[journeysToUpdate.length - 1];
+
+        await journeysCollection.updateOne(
+            { _id: lastJourney._id },
+            {
+                $set: {
+                    driverName: adminUser.dni,
+                    employeeId: adminUser._id
+                }
+            }
+        );
         const allVehicles = await vehiclesCollection.find({}).toArray();
         const journeyCounts = {};
 
@@ -898,7 +921,6 @@ module.exports = async function initializeDatabase(client) {
             }
         });
 
-        const adminUser = await usersCollection.findOne({ role: "ADMIN" });
 
         const currentDate = new Date();
 
@@ -932,7 +954,6 @@ module.exports = async function initializeDatabase(client) {
 
             if (currentCount < 10) {
                 const journeysToAdd = 10 - currentCount;
-                console.log(`Adding ${journeysToAdd} journeys to vehicle ${vehicle.numberPlate}`);
 
                 let baseOdometer = 5000;
                 const vehicleJourneys = existingJourneys.filter(j => j.vehiclePlate === vehicle.numberPlate);
@@ -984,12 +1005,10 @@ module.exports = async function initializeDatabase(client) {
 
         if (journeysToRemove.length > 0) {
             await journeysCollection.deleteMany({ _id: { $in: journeysToRemove } });
-            console.log(`Removed ${journeysToRemove.length} excess journeys.`);
         }
 
         if (newJourneys.length > 0) {
             await journeysCollection.insertMany(newJourneys);
-            console.log(`Added ${newJourneys.length} new journeys to ensure all vehicles have exactly 10 journeys.`);
         }
 
 

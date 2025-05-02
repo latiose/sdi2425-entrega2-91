@@ -19,6 +19,7 @@ import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -513,7 +514,8 @@ class Sdi2425Entrega2TestApplicationTests {
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         List<WebElement> rows = driver.findElements(By.xpath("//table[@id='journeyTable']/tbody/tr"));
-        List<String> matriculasEsperadas = List.of("6543NRG", "Z0032BY", "4567CRD","1234BCD");
+        List<String> matriculasEsperadas = Arrays.asList("6543NRG", "Z0032BY", "4567CRD", "1234BCD");
+
         for (WebElement row : rows) {
             List<WebElement> cells = row.findElements(By.tagName("td"));
             if (!cells.isEmpty()) {
@@ -584,7 +586,7 @@ class Sdi2425Entrega2TestApplicationTests {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
 
-        driver.get("http://localhost:8081/journeys/list?page=11");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Mis trayectos");
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
         for (WebElement row : rows) {
@@ -618,7 +620,7 @@ class Sdi2425Entrega2TestApplicationTests {
     public void PR029() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
-        driver.get("http://localhost:8081/journeys/list?page=11");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Mis trayectos");
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
         for (WebElement row : rows) {
@@ -649,7 +651,7 @@ class Sdi2425Entrega2TestApplicationTests {
     public void PR030() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
-        driver.get("http://localhost:8081/journeys/list?page=11");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Mis trayectos");
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
         for (WebElement row : rows) {
@@ -968,7 +970,7 @@ class Sdi2425Entrega2TestApplicationTests {
         List<Object> journeys = journeysResponse.jsonPath().getList("");
         assertNotNull(journeys);
 
-        assertEquals(193, journeys.size());
+        assertEquals(147, journeys.size());
     }
 
 
@@ -1044,7 +1046,7 @@ class Sdi2425Entrega2TestApplicationTests {
         int totalCount = journeyRows.size();
 
         // Este número cambiará cuando redistribuyamos los trayectos
-        Assertions.assertEquals(193, totalCount, "El número de vehículos no coincide.");
+        Assertions.assertEquals(147, totalCount, "El número de vehículos no coincide.");
     }
 }
 
