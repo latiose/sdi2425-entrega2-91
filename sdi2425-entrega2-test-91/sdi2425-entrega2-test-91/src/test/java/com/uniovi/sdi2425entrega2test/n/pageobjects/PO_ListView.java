@@ -75,6 +75,7 @@ public class PO_ListView extends PO_NavView{
         if (!elements.isEmpty()) {
             elements.get(elements.size() - 1).click();
         }
+
     }
 
     static public boolean deleteVehiclesByIndexes(WebDriver driver, int[] indexes) {

@@ -17,6 +17,20 @@ public class PO_PrivateView extends PO_NavView {
         elements.get(0).click();
     }
 
+    static public void fillFormAddEmployee(WebDriver driver, String dnip, String namep, String lastNamep)
+    {
+        WebElement dniInput = driver.findElement(By.id("dni"));
+        dniInput.clear();
+        dniInput.sendKeys(dnip);
+        WebElement nameInput = driver.findElement(By.id("name"));
+        nameInput.clear();
+        nameInput.sendKeys(namep);
+        WebElement lastNameInput = driver.findElement(By.id("lastName"));
+        lastNameInput.clear();
+        lastNameInput.sendKeys(lastNamep);
+        driver.findElement(By.className("btn-primary")).click();
+    }
+
     static public void fillFormAddVehicle(WebDriver driver, String numberPlatep, String vinp, String brandp,
                                           String modelp, String fuelp)
     {
@@ -88,7 +102,7 @@ public class PO_PrivateView extends PO_NavView {
 
         WebElement roleDropdown = driver.findElement(By.id("role"));
         Select select = new Select(roleDropdown);
-        select.selectByVisibleText("Administrador");
+        select.selectByVisibleText("ADMINISTRADOR");
 
         driver.findElement(By.className("btn-primary")).click();
     }

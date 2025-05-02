@@ -29,7 +29,7 @@ module.exports = async function initializeDatabase(client) {
                 dni: "12345678Z",
                 name: "Administrador",
                 lastName: "Sistema",
-                password: hashPassword("admin", clave),
+                password: hashPassword("@Dm1n1str@D0r", clave),
                 role: "ADMIN"
             }
         ];

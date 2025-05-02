@@ -87,7 +87,7 @@ module.exports = function (app, usersRepository, logs) {
       }
       usersRepository.insertUser(user).then(async userId => {
         await logs.logSignup(user);
-        res.redirect("/journeys/list" +
+        res.redirect("/employee/list" +
             "?message=Nuevo usuario registrado. Password: " + password +
             "&messageType=alert-info ");
       }).catch(error => {
@@ -105,9 +105,12 @@ module.exports = function (app, usersRepository, logs) {
   app.get('/users/login', async function (req, res) {
     if (req.session.user) {
       res.redirect("/journeys/list");
-    } else
-      res.render("login.twig");
-  })
+    } else {
+      const logout = req.query.logout === "true";
+
+      res.render("login.twig", { logout: logout });
+    }
+  });
   app.post('/users/login', function (req, res) {
     let securePassword = app.get('crypto').createHmac('sha256', app.get('clave'))
         .update(req.body.password).digest('hex');
@@ -130,7 +133,13 @@ module.exports = function (app, usersRepository, logs) {
         req.session.role = user.role;
         req.session.userId = user._id;
         await logs.logLoginEx(req.session.user);
-        res.redirect("/journeys/list");
+        if(user.role == "ADMIN"){
+          res.redirect("/employee/list");
+        }
+        else{
+          res.redirect("/journeys/list");
+        }
+
       }
     }).catch(error => {
       req.session.user = null;
@@ -145,11 +154,21 @@ module.exports = function (app, usersRepository, logs) {
   });
   app.get('/users/logout', async function (req, res) {
     await logs.logLogout(req.session.user);
-    req.session.destroy(err => {
+
+    req.session.logoutMessage = "Se ha cerrado sesión correctamente";
+
+    req.session.save((err) => {
       if (err) {
-        console.log("Error: " + err);
+        console.log("Error guardando sesión: " + err);
       }
-      res.redirect("/users/login");
+
+      req.session.destroy(err => {
+        if (err) {
+          console.log("Error: " + err);
+        }
+
+        res.redirect("/users/login?logout=true");
+      });
     });
   });
 
@@ -285,7 +304,7 @@ module.exports = function (app, usersRepository, logs) {
       };
 
       await usersRepository.updateUser(userId, employeeToUpdate);
-      res.redirect('/employee/details/' + id);
+      res.redirect('/employee/list');
 
     } catch (error) {
       console.error('Error al actualizar el empleado:', error);

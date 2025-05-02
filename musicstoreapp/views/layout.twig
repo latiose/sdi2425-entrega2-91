@@ -47,7 +47,7 @@
                                 Gestión de empleados <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="/users/signup"><span class="glyphicon glyphicon-user"></span> Agregar empleado</a></li>
+                                <li><a href="/users/signup">Agregar empleado</a></li>
                                 <li><a href="/employee/list">Lista de Empleados</a></li>
                                 <li><a href="/employee/edit/">Editar empleado</a></li>
                             </ul>
@@ -69,9 +69,6 @@
                 </ul>
             {% endif %}
             <ul class="nav navbar-nav navbar-right">
-                {% if user and user.role == 'ADMIN' %}
-                    <li><a href="/users/signup"><span class="glyphicon glyphicon-user"></span> Agregar empleado</a></li>
-                {% endif %}
                 {% if user and user.role == 'ADMIN' %}
                     <li><a href="/logs/list"> Lista de regsitros </a></li>
                 {% endif %}
