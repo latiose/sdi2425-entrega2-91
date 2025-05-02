@@ -33,10 +33,10 @@
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav" id="barra-menu">
         <li><a href="http://localhost:8081/">Volver a la sección de servicios web</a></li>
-        <li><a onclick="widgetJourneysVehicle()">Ver trayectos de cada vehículo</a></li>
-        <li><a onclick="widgetJourneysAdd()">Añadir un trayecto</a></li>
-        <li><a onclick="widgetVehiclesList()">Lista de vehículos</a></li>
-        <li><a onclick="widgetJourneysUser()">Ver mis trayectos</a></li>
+        <li class="auth-required"><a onclick="widgetJourneysVehicle()">Ver trayectos de cada vehículo</a></li>
+        <li class="auth-required"><a onclick="widgetJourneysAdd()">Añadir un trayecto</a></li>
+        <li class="auth-required"><a onclick="widgetVehiclesList()">Lista de vehículos</a></li>
+        <li class="auth-required"><a onclick="widgetJourneysUser()">Ver mis trayectos</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right" id="barra-menu-derecha">
         <!-- Opciones de menú aqui -->
@@ -49,22 +49,68 @@
   <script>
     let token;
     let URLbase = "http://localhost:8081/api/v1.0";
-    if ( Cookies.get('token') != null ){
+
+    $(document).ready(function() {
+      // Comprobar si existe token al cargar la página
+      checkAuthState();
+
+      // Cargar el widget apropiado
+      loadInitialWidget();
+
+      $(document).on('cookieUpdate', function() {
+        checkAuthState();
+      });
+    });
+
+    function checkAuthState() {
+      if (Cookies.get('token') != null) {
+        token = Cookies.get('token');
+        $(".auth-required").show();
+
+        $("#barra-menu-derecha").html('<li><a onclick="logout()"><span class="glyphicon glyphicon-log-out"></span> Cerrar sesión</a></li>');
+      } else {
+        $(".auth-required").hide();
+
+        $("#barra-menu-derecha").html('<li><a onclick="loadLoginWidget()"><span class="glyphicon glyphicon-log-in"></span> Iniciar sesión</a></li>');
+      }
+    }
+
+    function updateAuthState() {
       token = Cookies.get('token');
-      let url = new URL(window.location.href);
-      let w = url.searchParams.get("w");
-      if (w == "login") {
-        $("#main-container").load("widget-login.html");
-      }
-      <!-- esto lo dejé asi pero creo que va la lista de vehiculos-->
-      if (w == "journeys") {
-        $("#main-container").load("widget-journeys-vehicle.html");
-      }
-      else{
-        $( "#main-container" ).load("widget-login.html");
-      }
-    }else {
-      $( "#main-container" ).load("widget-login.html");
+      checkAuthState();
+      $("#main-container").load("widget-vehicles-list.html");
+      $(document).trigger('cookieUpdate');
+    }
+
+    function loadInitialWidget() {
+        let url = new URL(window.location.href);
+        let w = url.searchParams.get("w");
+
+        if(token) {
+          if (w === "journeys") {
+            $("#main-container").load("widget-journeys-vehicle.html");
+          } else if (w === "add") {
+            $("#main-container").load("widget-add-journey.html");
+          } else if (w === "vehicles") {
+            $("#main-container").load("widget-vehicles-list.html");
+          } else if (w === "myjourneys") {
+            $("#main-container").load("widget-journeys-user.html");
+          } else {
+            // Widget por defecto para usuarios autenticados
+            $("#main-container").load("widget-vehicles-list.html");
+          }
+        } else {
+          // Usuario no autenticado - mostrar login
+          loadLoginWidget();
+        }
+    }
+    function loadLoginWidget() {
+      $("#main-container").load("widget-login.html");
+    }
+    function logout() {
+      Cookies.remove('token');
+      checkAuthState();
+      loadLoginWidget();
     }
 
     function widgetJourneysVehicle(){ $( "#main-container" ).load( "widget-journeys-vehicle.html"); }
