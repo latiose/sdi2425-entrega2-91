@@ -1025,5 +1025,26 @@ class Sdi2425Entrega2TestApplicationTests {
         List<WebElement> rows = driver.findElements(By.cssSelector("#journeysTableBody tr"));
         Assertions.assertTrue(rows.size() >= 3);
     }
+
+    @Test
+    @Order(63)
+    public void PR063(){
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        elements = PO_View.checkElementBy(driver, "text", "Ver mis trayectos");
+        elements.get(0).click();
+        String checkText = "Mis trayectos";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+        List<WebElement> journeyRows = driver.findElements(By.xpath("//*[@id=\"journeysTableBody\"]/tr"));
+        int totalCount = journeyRows.size();
+
+        // Este número cambiará cuando redistribuyamos los trayectos
+        Assertions.assertEquals(193, totalCount, "El número de vehículos no coincide.");
+    }
 }
 
