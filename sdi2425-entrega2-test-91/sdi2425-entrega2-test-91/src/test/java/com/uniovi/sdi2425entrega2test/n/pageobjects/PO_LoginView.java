@@ -41,6 +41,12 @@ public class PO_LoginView extends PO_NavView {
 		driver.findElement(boton).click();
 	}
 
+	static public void logOut(WebDriver driver){
+		String loginText = "Ha cerrado sesión correctamente";
+		PO_PrivateView.clickOption(driver, "logout", "text", loginText);
+
+	}
+
 	static public void login(WebDriver driver,String user, String password, String checkText) {
 		clickOption(driver, "login", "class", "btn btn-primary");
 		fillLoginForm(driver, user, password);

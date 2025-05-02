@@ -69,7 +69,138 @@ class Sdi2425Entrega2TestApplicationTests {
         driver.quit();
     }
 
+    @Test
+    @Order(1)
+    @Transactional
+    public void PR01() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/employee"));
+    }
 
+    @Test
+    @Order(2)
+    @Transactional
+    public void PR02() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S","Us3r@1-PASSW");
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/journeys"));
+    }
+
+    @Test
+    @Order(3)
+    @Transactional
+    public void PR03() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "","");
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/login"));
+    }
+
+    @Test
+    @Order(4)
+    @Transactional
+    public void PR04() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver,"10000001S" ,"1234");
+        String checkText = "Dni o password incorrecto";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(5)
+    @Transactional
+    public void PR05() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "10000001S","Us3r@1-PASSW");
+        PO_LoginView.logOut(driver);
+        String loginText = "Ha cerrado sesión correctamente";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", loginText);
+        Assertions.assertEquals(loginText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(6)
+    @Transactional
+    public void PR06() {
+        List<WebElement> logoutLink = driver.findElements(By.linkText("Cerrar sesión"));
+        assertTrue(logoutLink.isEmpty());
+    }
+
+    @Test
+    @Order(7)
+    @Transactional
+    public void PR07() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Agregar empleado");
+        PO_PrivateView.fillFormAddEmployee(driver, "07112884L", "Pablo", "Perez Alvarez");
+        PO_ListView.goToLastPage(driver);
+        PO_ListView.goToNextPage(driver);
+        String checkText = "07112884L";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        assertFalse(result.isEmpty());
+        PO_LoginView.logOut(driver);
+    }
+
+    @Test
+    @Order(8)
+    @Transactional
+    public void PR08() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Agregar empleado");
+
+        driver.findElement(By.className("btn-primary")).click();
+
+        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
+        assertFalse(requiredFieldErrors.isEmpty());
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/users/signup"));
+
+        PO_LoginView.logOut(driver);
+    }
+
+    @Test
+    @Order(9)
+    @Transactional
+    public void PR09() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Agregar empleado");
+
+        PO_PrivateView.fillFormAddEmployee(driver, "123", "Pablo", "Perez Alvarez");
+
+        String checkText = "Formato dni invalido";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        assertFalse(result.isEmpty());
+
+    }
+
+    @Test
+    @Order(10)
+    @Transactional
+    public void PR010() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Agregar empleado");
+
+        PO_PrivateView.fillFormAddEmployee(driver, "12345678Z", "Pablo", "Perez Alvarez");
+
+        String checkText = "Este DNI ya está registrado";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        assertFalse(result.isEmpty());
+
+    }
 
 
     @Test
@@ -235,6 +366,88 @@ class Sdi2425Entrega2TestApplicationTests {
         List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
+    @Test
+    @Order(21)
+    @Transactional
+    public void PR017() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Lista de Empleados");
+
+        int numEmployees = 16;
+
+        int totalCount = 0;
+        boolean next = true;
+        while (next) {
+            List<WebElement> employeeRows = driver.findElements(By.xpath("//div[@class='table-responsive']/table/tbody/tr"));
+            totalCount += employeeRows.size();
+            next = PO_PrivateView.goToNextPage(driver);
+        }
+
+        Assertions.assertEquals(numEmployees, totalCount, "El número de empleados no coincide");
+    }
+
+    @Test
+    @Order(22)
+    @Transactional
+    public void PR018() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver, "text", "Gestión de empleados", "text","Lista de Empleados");
+
+        WebElement thirdEditLink = driver.findElement(
+                By.xpath("(//div[@class='table-responsive']//table//tbody//tr//a[contains(@class, 'btn-warning') or contains(text(), 'Editar')])[3]")
+        );
+        thirdEditLink.click();
+
+        String dni = "58435079Z";
+        String name = "Marcos";
+        String lastName = "Caraduje Martínez";
+
+        PO_PrivateView.filFormEditEmployee(driver, dni, name, lastName);
+
+        PO_LoginView.logOut(driver);
+
+        PO_LoginView.fillForm(driver, dni, "Us3r@2-PASSW");
+
+        String url = driver.getCurrentUrl();
+
+        Assertions.assertTrue(url.contains("/employee/list"));
+    }
+
+    @Test
+    @Order(23)
+    @Transactional
+    public void PR019() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+
+        PO_PrivateView.goThroughNav(driver, "text", "Gestión de empleados", "text","Lista de Empleados");
+
+        // Corregimos el XPath para usar la estructura real de la tabla
+        WebElement thirdEditLink = driver.findElement(
+                By.xpath("(//div[@class='table-responsive']//table//tbody//tr//a[contains(@class, 'btn-warning') or contains(text(), 'Editar')])[3]")
+        );
+        thirdEditLink.click();
+
+        String dni = "12345678Z";
+        String name = "";
+        String lastName = "";
+
+        PO_PrivateView.filFormEditEmployee(driver, dni, name, lastName);
+
+        List<WebElement> resultDni = PO_View.checkElementBy(driver, "text", "Este DNI ya está registrado por otro empleado");
+        assertFalse(resultDni.isEmpty());
+
+        List<WebElement> resultName = PO_View.checkElementBy(driver, "text", "El nombre no puede estar vacío");
+        assertFalse(resultName.isEmpty());
+
+        List<WebElement> resultLastName = PO_View.checkElementBy(driver, "text", "El apellido no puede estar vacío");
+        assertFalse(resultLastName.isEmpty());
+    }
+
 
     @Test
     @Order(24)

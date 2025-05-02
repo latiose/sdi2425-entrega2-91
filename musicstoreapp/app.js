@@ -118,6 +118,7 @@ require("./routes/songs/songs.js")(app,songsRepository);
 require("./routes/authors.js")(app);
 usersRepository.init(app, dbClient);
 require("./routes/users.js")(app, usersRepository, logs);
+require("./routes/logs")(app, logsRepository);
 
 (async () => {
   try {

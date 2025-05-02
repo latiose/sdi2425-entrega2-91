@@ -1,0 +1,60 @@
+{% extends "layout.twig" %}
+{% block title %} Empleados {% endblock %}
+
+{% block main_container %}
+    <div class="row">
+        <h2>Lista de empleados</h2>
+
+        {% if errors %}
+            <div class="alert alert-danger">
+                <p>{{ errors.error }}</p>
+            </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.dni }}</td>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.lastName }}</td>
+                        <td>
+                            <span class="badge {% if employee.role == 'ADMIN' %}bg-danger{% else %}bg-primary{% endif %}">
+                                {{ employee.role }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/employee/edit/{{ employee._id }}" class="btn btn-warning btn-sm">
+                                <i class="fa fa-pencil"></i> Editar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row text-center">
+            <ul class="pagination">
+                {% for page in pages %}
+                    <li class="page-item" id="pi-{{ page }}">
+                        <a class="page-link" href="/employee/list?page={{ page }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+                <script>
+                    $("#pi-" + "{{ currentPage }}").addClass("active");
+                </script>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
