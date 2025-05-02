@@ -68,8 +68,8 @@ const userAudiosRouter = require('./routes/userAudiosRouter');
 const userTokenRouter = require('./routes/userTokenRouter');
 //añadir esto cuando se acabe el 1
 //app.use("/api/v1.0/songs/", userTokenRouter);
-//app.use("/api/v1.0/journeys/", userTokenRouter);
-//app.use("/api/v1.0/vehicles/", userTokenRouter);
+app.use("/api/v1.0/journeys/", userTokenRouter);
+app.use("/api/v1.0/vehicles/", userTokenRouter);
 app.use("/songs/add",userSessionRouter);
 app.use("/refuels", userSessionRouter);
 app.use("/publications",userSessionRouter);

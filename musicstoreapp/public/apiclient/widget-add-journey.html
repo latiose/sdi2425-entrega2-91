@@ -21,6 +21,8 @@
       return;
     }
 
+    sessionStorage.setItem("lastSelectedPlate", numberPlate);
+
     $.ajax({
       url: URLbase + "/journeys/add",
       type: "POST",
@@ -28,8 +30,7 @@
       headers: { "token": token },
       dataType: 'json',
       success: function (response) {
-        alert("Trayecto iniciado con éxito");
-        $("#main-container").load("widget-journeys.html");
+        $("#main-container").load("widget-journeys-vehicle.html");
       },
       error: function (xhr) {
         const msg = xhr.responseJSON?.error || "Error al iniciar trayecto.";
@@ -37,6 +38,7 @@
       }
     });
   }
+
 </script>
 
 

@@ -29,10 +29,25 @@
         let select = $("#selectVehicle");
         select.empty();
         select.append('<option value="">-- Seleccione un vehículo --</option>');
+
+        let lastPlate = sessionStorage.getItem("lastSelectedPlate");
+        if(lastPlate === null) lastPlate = "1234BCD"
+        let selectedId = "";
+
         data.forEach(function(vehicle) {
           let label = `${vehicle.numberPlate} - ${vehicle.brand} ${vehicle.model}`;
           select.append(`<option value="${vehicle._id}">${label}</option>`);
+
+          if (vehicle.numberPlate === lastPlate) {
+            selectedId = vehicle._id;
+          }
         });
+
+        if (selectedId) {
+          select.val(selectedId);
+          loadJourneys();
+          sessionStorage.removeItem("lastSelectedPlate");
+        }
       },
       error: function () {
         alert("Error al cargar vehículos.");
