@@ -32,7 +32,6 @@
       },
       dataType: "json",
       success: function(response) {
-        console.log(response.token); // Prueba.
         token = response.token;
         Cookies.set('token', token);
         updateAuthState();

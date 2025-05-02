@@ -994,5 +994,36 @@ class Sdi2425Entrega2TestApplicationTests {
 
         Assertions.assertEquals(18, totalCount, "El número de vehículos no coincide.");
     }
+
+
+
+    @Test
+    @Order(61)
+    public void PR061() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+        PO_LoginView.fillForm(driver, "10000002Q", "Us3r@2-PASSW");
+
+        WebElement button = driver.findElement(By.xpath("/html/body/div/div/table/tbody/tr[3]/td[8]/button"));
+        button.click();
+        driver.findElement(By.xpath("/html/body/div/div/div[2]/button")).click();
+        String checkText = "4567CRD - BMW Serie 3";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+    }
+
+    @Test
+    @Order(62)
+    public void PR062() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+        PO_LoginView.fillForm(driver, "10000002Q", "Us3r@2-PASSW");
+
+        driver.findElement(By.linkText("Ver trayectos de cada vehículo")).click();
+
+        List<WebElement> rows = driver.findElements(By.cssSelector("#journeysTableBody tr"));
+        Assertions.assertTrue(rows.size() >= 3);
+    }
 }
 
