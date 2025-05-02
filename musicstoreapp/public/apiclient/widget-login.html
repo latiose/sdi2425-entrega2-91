@@ -35,6 +35,7 @@
         console.log(response.token); // Prueba.
         token = response.token;
         Cookies.set('token', token);
+        updateAuthState();
         $("#main-container").load("widget-vehicles-list.html");
       },
       error: function(error) {
