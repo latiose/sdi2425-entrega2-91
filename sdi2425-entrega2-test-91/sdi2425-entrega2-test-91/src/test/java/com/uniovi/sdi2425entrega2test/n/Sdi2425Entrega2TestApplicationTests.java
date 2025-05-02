@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,6 @@ class Sdi2425Entrega2TestApplicationTests {
     @Test
     @Order(11)
     @Transactional
-    @Rollback
     public void PR011() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
@@ -758,5 +758,28 @@ class Sdi2425Entrega2TestApplicationTests {
         assertEquals(193, journeys.size());
     }
 
+
+    @Test
+    @Order(60)
+    public void PR060() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        String checkText = "Lista de vehículos disponibles";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+        List<WebElement> vehicleRows = driver.findElements(By.xpath("//*[@id=\"vehiclesTableBody\"]/tr"));
+        int totalCount = vehicleRows.size();
+
+        for (int i = 0; i < vehicleRows.size(); i++) {
+            WebElement statusCell = vehicleRows.get(i).findElement(By.xpath("td[7]/span"));
+            String status = statusCell.getText();
+            Assertions.assertEquals("LIBRE", status);
+        }
+
+        Assertions.assertEquals(18, totalCount, "El número de vehículos no coincide.");
+    }
 }
 
