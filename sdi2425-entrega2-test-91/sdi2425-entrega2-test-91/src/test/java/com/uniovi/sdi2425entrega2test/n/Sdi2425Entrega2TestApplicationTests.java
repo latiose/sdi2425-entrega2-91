@@ -712,7 +712,7 @@ class Sdi2425Entrega2TestApplicationTests {
     @Test
     @Order(37)
     public void PR033() {
-        driver.get("http://localhost:8081/users/list");
+        driver.get("http://localhost:8081/employee/list");
         new WebDriverWait(driver, 10).until(ExpectedConditions.urlContains("/login"));
         String currentUrl = driver.getCurrentUrl();
         assertTrue(currentUrl.contains("/login"));
