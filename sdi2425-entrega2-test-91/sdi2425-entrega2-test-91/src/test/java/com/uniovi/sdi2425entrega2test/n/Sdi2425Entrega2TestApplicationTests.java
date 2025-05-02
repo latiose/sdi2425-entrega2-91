@@ -22,8 +22,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -730,6 +729,99 @@ class Sdi2425Entrega2TestApplicationTests {
 
         List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Transactional
+    public void PR035() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+        PO_LoginView.logOut(driver);                                 // LOGOUT
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+        PO_LoginView.logOut(driver);                                 // LOGOUT
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+
+        driver.get("http://localhost:8081/logs/list");
+
+        WebElement typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        Select select = new Select(typeDropdown);
+        select.selectByVisibleText("PET");
+        WebElement filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        List<WebElement> employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertFalse(employeeRows.isEmpty());
+
+        typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGIN-EX");
+
+
+        filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(3, employeeRows.size());
+
+
+        typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGIN-ERR");
+
+        filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(2, employeeRows.size());
+
+
+        typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGOUT");
+
+        filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(2, employeeRows.size());
+    }
+
+    @Test
+    @Transactional
+    public void PR036() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+
+        driver.get("http://localhost:8081/logs/list");
+
+
+        WebElement typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        Select select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGIN-ERR");
+
+
+        WebElement filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+
+
+        List<WebElement> employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(2, employeeRows.size());
+
+
+        WebElement deleteButton = driver.findElement(By.xpath("//button[contains(@class, 'btn-danger')]"));
+        deleteButton.click();
+
+
+        try {
+            typeDropdown = driver.findElement(By.id("logTypeFilter"));
+            select = new Select(typeDropdown);
+            select.selectByVisibleText("LOGIN-ERR"); // Esto debería fallar
+            fail("Se esperaba que se lanzara una excepción al seleccionar 'LOGIN-ERR', pero no ocurrió.");
+        } catch (Exception e) {
+            assertTrue(true); //si se produce la excepción pasa el test
+        }
+
     }
 
     @Test
