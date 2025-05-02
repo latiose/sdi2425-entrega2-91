@@ -79,7 +79,7 @@ app.use("/audios/",userAudiosRouter);
 app.use("/shop/",userSessionRouter)
 app.use("/journeys/", userSessionRouter);
 app.use("/vehicles/", userSessionRouter);
-app.use("/users/list", userSessionRouter);
+app.use("/employee/", userSessionRouter);
 app.use("/logs/", userSessionRouter);
 const userAuthorRouter = require('./routes/userAuthorRouter');
 app.use("/songs/edit",userAuthorRouter);
@@ -89,6 +89,7 @@ app.use("/users/signup", adminSessionRouter);
 app.use("/vehicles/add", adminSessionRouter);
 app.use("/vehicles/list", userSessionRouter);
 app.use("/logs/", adminSessionRouter);
+app.use("/employee/", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
