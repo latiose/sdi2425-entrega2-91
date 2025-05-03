@@ -1,4 +1,5 @@
-module.exports = function(app, refuelsRepository, journeysRepository) {
+const {ObjectId} = require("mongodb");
+module.exports = function(app, refuelsRepository, journeysRepository, vehiclesRepository) {
     app.get('/refuels/add', async (req, res) => {
         res.render('refuels/add');
     })
@@ -10,6 +11,7 @@ module.exports = function(app, refuelsRepository, journeysRepository) {
             fullTank: req.body.fullTank === 'true',
             odometer: req.body.odometer,
             comments: req.body.comments?.trim(),
+            date: new Date()
         };
 
         let errors = {};
@@ -55,15 +57,68 @@ module.exports = function(app, refuelsRepository, journeysRepository) {
                 });
                 return;
             }
+            refuel.journeyId = journey._id;
+            refuel.vehicleId = journey.vehicleId;
             await refuelsRepository.insertRefuel(refuel);
-            res.send('Repostaje añadido correctamente');
-            // res.redirect('/refuels/list');
+            res.redirect(`/refuels/vehicle/${refuel.vehicleId}`);
         } catch (error) {
             console.error(error);
             res.render('refuels/add.twig', {
                 error: 'Error al añadir el repostaje'
             });
         }
-
     });
+
+    app.get('/refuels/vehicle/:id', async(req, res) => {
+        try{
+            let vehicles = await vehiclesRepository.getAllVehicles();
+            if (vehicles.length === 0) {
+                return res.render('refuels/vehicle.twig', {
+                    errors: { error: 'No hay vehículos disponibles.' }
+                });
+            }
+
+            let vehicleId = req.params.id;
+            if (!ObjectId.isValid(vehicleId) || !vehicles.some(v => v._id.toString() === vehicleId)) {
+                vehicleId = vehicles[0]._id.toString();
+            }
+
+            let filter = { vehicleId: new ObjectId(vehicleId) };
+            let page = parseInt(req.query.page) || 1;
+            let options = {sort: { date: -1}};
+            const result = await refuelsRepository.getRefuelsPaginated(filter, options, page);
+            let lastPage = Math.ceil(result.total / 5);
+            if (result.total % 5 === 0 && result.total > 0) {
+                lastPage = result.total / 5;
+            }
+
+            let pages = [];
+            for (let i = page - 1; i <= page + 1; i++) {
+                if (i > 0 && i <= lastPage) {
+                    pages.push(i);
+                }
+            }
+            let error;
+            if(result.refuels.length === 0){
+                error = 'No hay repostajes para este vehículo';
+            }
+            let fuelTypeVehicle = await vehiclesRepository.getVehicleById(vehicleId);
+            console.log(fuelTypeVehicle);
+            result.refuels.forEach(refuel => { refuel.fuelType = fuelTypeVehicle.fuelType });
+            res.render('refuels/vehicle.twig', {
+                refuels: result.refuels,
+                pages,
+                currentPage: page,
+                currentVehicleId: vehicleId,
+                vehicles: vehicles,
+                error: error
+            })
+        } catch (error) {
+            console.log(error)
+            res.render('refuels/vehicle.twig', {
+                error: 'Error al obtener los repostajes'
+            })
+        }
+
+    })
 }

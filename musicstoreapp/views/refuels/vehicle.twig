@@ -1,0 +1,90 @@
+{% extends "layout.twig" %}
+{% block title %} Trayectos {% endblock %}
+
+{% block main_container %}
+    <div class="row">
+        <h2>Trayectos del vehículo</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="numberPlate">Seleccione vehículo:</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="numberPlate" name="numberPlate" onchange="changeVehicle()" required>
+                    <option value="">-- Seleccione una matrícula --</option>
+                    {% for vehicle in vehicles %}
+                        <option value="{{ vehicle._id }}"
+                                {% if vehicle._id == currentVehicleId %}selected{% endif %}>
+                            {{ vehicle.numberPlate }} - {{ vehicle.brand }} {{ vehicle.model }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>Fecha y hora</th>
+                <th>Odómetro</th>
+                <th>Tipo de combustible</th>
+                <th>Estación de servicio</th>
+                <th>Precio por unidad</th>
+                <th>Cantidad</th>
+                <th>Precio total</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for refuel in refuels %}
+                <tr>
+                    <td>{{ refuel.date | date('d/m/Y H:i') }}</td>
+                    <td>{{ refuel.odometer }}</td>
+                    <td>{{ refuel.fuelType }}</td>
+                    <td>{{ refuel.stationName }}</td>
+                    <td>{{ refuel.price }}</td>
+                    <td>{{ refuel.amount }}</td>
+                    <td>{{ refuel.price * refuel.amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+        <!-- Paginación mostrar la actual y 2 anteriores y dos siguientes -->
+        <div class="row text-center">
+            <ul class="pagination">
+                {% for page in pages %}
+                    <li class="page-item" id="pi-{{ page }}">
+                        <a class="page-link" href="/refuels/vehicle/{{ currentVehicleId }}?page={{ page }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+                <script>
+                    $("#pi-" + "{{ currentPage }}").addClass("active");
+                </script>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function changeVehicle() {
+            const vehicleId = document.getElementById('numberPlate').value;
+            if (vehicleId) {
+                window.location.href = '/refuels/list/' + vehicleId;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const vehicleId = "{{ currentVehicleId }}";
+            if (vehicleId) {
+                const selectElement = document.getElementById('numberPlate');
+                if (selectElement && selectElement.value !== vehicleId) {
+                    selectElement.value = vehicleId;
+                }
+            }
+        });
+    </script>
+{% endblock %}
