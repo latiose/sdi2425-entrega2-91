@@ -141,11 +141,9 @@ class Sdi2425Entrega2TestApplicationTests {
 
         PO_PrivateView.goThroughNav(driver,"text","Gestión de empleados","text","Agregar empleado");
         PO_PrivateView.fillFormAddEmployee(driver, "07112884L", "Pablo", "Perez Alvarez");
-        PO_ListView.goToLastPage(driver);
-        PO_ListView.goToNextPage(driver);
         String checkText = "07112884L";
-        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
-        assertFalse(result.isEmpty());
+        boolean found = PO_ListView.searchThroughPages(driver, checkText);
+        assertTrue(found);
         PO_LoginView.logOut(driver);
     }
 
@@ -160,8 +158,10 @@ class Sdi2425Entrega2TestApplicationTests {
 
         driver.findElement(By.className("btn-primary")).click();
 
-        List<WebElement> requiredFieldErrors = driver.findElements(By.cssSelector(":invalid"));
-        assertFalse(requiredFieldErrors.isEmpty());
+        String checkText = "Este DNI ya está registrado";
+
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
         String currentUrl = driver.getCurrentUrl();
         assertTrue(currentUrl.contains("/users/signup"));
 
