@@ -23,7 +23,7 @@ public class PO_NavView extends PO_View {
         List<WebElement> elements = SeleniumUtils.waitLoadElementsBy(driver, "@href", textOption,
                 getTimeout());
         //Tiene que haber un sólo elemento.
-        Assertions.assertEquals(2, elements.size());
+        Assertions.assertEquals(1, elements.size());
         //Ahora lo clickamos
         elements.get(0).click();
         //Esperamos a que sea visible un elemento concreto
