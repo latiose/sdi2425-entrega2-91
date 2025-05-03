@@ -972,6 +972,91 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(403, response.getStatusCode());
     }
 */
+
+
+    @Test
+    @Order(44)
+    public void PR044() {
+        JSONObject loginCredentials = new JSONObject();
+        loginCredentials.put("dni", "10000001S");
+        loginCredentials.put("password", "Us3r@1-PASSW");
+
+        Response loginResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+
+
+        assertEquals(200, loginResponse.getStatusCode());
+        String token = loginResponse.jsonPath().getString("token");
+        assertNotNull(token);
+        assertFalse(token.isEmpty());
+    }
+
+
+    @Test
+    @Order(45)
+    public void PR045() {
+        JSONObject loginCredentials = new JSONObject();
+        loginCredentials.put("dni", "10000001S");
+        loginCredentials.put("password", "ContraseñaIncorrecta123!");
+
+        Response loginResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+
+        assertEquals(401, loginResponse.getStatusCode());
+
+
+        String errorMessage = loginResponse.jsonPath().getString("message");
+        assertNotNull(errorMessage);
+        assertTrue(errorMessage.contains("no autorizado"));
+    }
+
+    @Test
+    @Order(46)
+    public void PR046() {
+        // Caso 1: Username vacío
+        JSONObject emptyUsernameCredentials = new JSONObject();
+        emptyUsernameCredentials.put("dni", "");
+        emptyUsernameCredentials.put("password", "Us3r@1-PASSW");
+
+        Response emptyUsernameResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(emptyUsernameCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+
+        assertEquals(400, emptyUsernameResponse.getStatusCode());
+
+        // Caso 2: Contraseña vacía
+        JSONObject emptyPasswordCredentials = new JSONObject();
+        emptyPasswordCredentials.put("dni", "10000001S");
+        emptyPasswordCredentials.put("password", "");
+
+        Response emptyPasswordResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(emptyPasswordCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+        assertEquals(400, emptyPasswordResponse.getStatusCode());
+
+        // Caso 3: Ambos campos vacíos
+        JSONObject emptyCredentials = new JSONObject();
+        emptyCredentials.put("dni", "");
+        emptyCredentials.put("password", "");
+
+        Response emptyCredentialsResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(emptyCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+        assertEquals(400, emptyCredentialsResponse.getStatusCode());
+    }
+
     @Test
     @Order(45)
     public void PR047() {
@@ -1063,6 +1148,41 @@ class Sdi2425Entrega2TestApplicationTests {
         assertEquals(193, journeys.size());
     }
 
+    @Test
+    @Order(57)
+    public void PR057() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        String checkText = "Lista de vehículos disponibles";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(58)
+    public void PR058() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "");
+        String checkText = "Error en inicio de sesión";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(59)
+    public void PR059() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");
+        String checkText = "Error en inicio de sesión";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
 
     @Test
     @Order(60)
@@ -1086,5 +1206,7 @@ class Sdi2425Entrega2TestApplicationTests {
 
         Assertions.assertEquals(18, totalCount, "El número de vehículos no coincide.");
     }
+
+
 }
 
