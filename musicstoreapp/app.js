@@ -64,26 +64,16 @@ app.use(logs.logRequest);
 
 const userSessionRouter = require('./routes/userSessionRouter');
 
-const userAudiosRouter = require('./routes/userAudiosRouter');
+
 const userTokenRouter = require('./routes/userTokenRouter');
-//añadir esto cuando se acabe el 1
-//app.use("/api/v1.0/songs/", userTokenRouter);
+
 app.use("/api/v1.0/journeys/", userTokenRouter);
 app.use("/api/v1.0/vehicles/", userTokenRouter);
-app.use("/songs/add",userSessionRouter);
 app.use("/refuels", userSessionRouter);
-app.use("/publications",userSessionRouter);
-app.use("/songs/buy",userSessionRouter);
-app.use("/purchases",userSessionRouter);
-app.use("/audios/",userAudiosRouter);
-app.use("/shop/",userSessionRouter)
 app.use("/journeys/", userSessionRouter);
 app.use("/vehicles/", userSessionRouter);
 app.use("/employee/", userSessionRouter);
 app.use("/logs/", userSessionRouter);
-const userAuthorRouter = require('./routes/userAuthorRouter');
-app.use("/songs/edit",userAuthorRouter);
-app.use("/songs/delete",userAuthorRouter);
 const adminSessionRouter = require('./routes/adminSessionRouter');
 app.use("/users/signup", adminSessionRouter);
 app.use("/vehicles/add", adminSessionRouter);
@@ -93,10 +83,7 @@ app.use("/employee/", adminSessionRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-let favoriteSongsRepository = require("./repositories/favoriteSongsRepository.js");
-favoriteSongsRepository.init(app, dbClient);
-let songsRepository = require("./repositories/songsRepository.js");
-songsRepository.init(app, dbClient);
+
 const usersRepository = require("./repositories/usersRepository.js");
 let vehiclesRepository = require("./repositories/vehiclesRepository.js")
 let journeysRepository = require("./repositories/journeysRepository.js")
@@ -110,13 +97,10 @@ usersRepository.init(app, dbClient);
 require("./routes/refuels.js")(app, refuelsRepository, journeysRepository, vehiclesRepository);
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository, usersRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
-require("./routes/songs/favorites.js")(app,favoriteSongsRepository,songsRepository);
 require("./routes/api/UserAPIv1.0.js")(app,usersRepository);
 require("./routes/api/JourneysAPIv1.0.js")(app, journeysRepository,usersRepository,vehiclesRepository);
 require("./routes/api/VehiclesAPIv1.0.js")(app, vehiclesRepository,usersRepository);
 require("./routes/api/testAPI.js")(app, dbClient);
-require("./routes/songs/songs.js")(app,songsRepository);
-require("./routes/authors.js")(app);
 usersRepository.init(app, dbClient);
 require("./routes/users.js")(app, usersRepository, logs);
 require("./routes/logs")(app, logsRepository);

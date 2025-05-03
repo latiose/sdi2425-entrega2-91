@@ -32,7 +32,7 @@
     <!-- Menús -->
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav" id="barra-menu">
-        <li><a href="#" onclick="logoutAndRedirect()">Volver a la sección de servicios web</a></li>
+        <li><a href="http://localhost:8081/">Volver a la sección de servicios web</a></li>
         <li class="auth-required"><a onclick="widgetJourneysVehicle()">Ver trayectos de cada vehículo</a></li>
         <li class="auth-required"><a onclick="widgetVehiclesList()">Lista de vehículos</a></li>
         <li class="auth-required"><a onclick="widgetJourneysUser()">Ver mis trayectos</a></li>
@@ -81,12 +81,7 @@
       $(document).trigger('cookieUpdate');
     }
 
-    function logoutAndRedirect() {
-      logout();
-      setTimeout(function() {
-        window.location.href = "http://localhost:8081/";
-      }, 200);
-    }
+
     function loadInitialWidget() {
         let url = new URL(window.location.href);
         let w = url.searchParams.get("w");

@@ -19,11 +19,11 @@ import com.uniovi.sdi2425entrega2test.n.pageobjects.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -513,7 +513,8 @@ class Sdi2425Entrega2TestApplicationTests {
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
 
         List<WebElement> rows = driver.findElements(By.xpath("//table[@id='journeyTable']/tbody/tr"));
-        List<String> matriculasEsperadas = List.of("6543NRG", "Z0032BY", "4567CRD","1234BCD");
+        List<String> matriculasEsperadas = Arrays.asList("6543NRG", "Z0032BY", "4567CRD", "1234BCD");
+
         for (WebElement row : rows) {
             List<WebElement> cells = row.findElements(By.tagName("td"));
             if (!cells.isEmpty()) {
@@ -584,7 +585,7 @@ class Sdi2425Entrega2TestApplicationTests {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z","@Dm1n1str@D0r");
 
-        driver.get("http://localhost:8081/journeys/list?page=11");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Mis trayectos");
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
         for (WebElement row : rows) {
@@ -618,7 +619,7 @@ class Sdi2425Entrega2TestApplicationTests {
     public void PR029() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
-        driver.get("http://localhost:8081/journeys/list?page=11");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Mis trayectos");
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
         for (WebElement row : rows) {
@@ -649,7 +650,7 @@ class Sdi2425Entrega2TestApplicationTests {
     public void PR030() {
         PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
         PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
-        driver.get("http://localhost:8081/journeys/list?page=11");
+        PO_PrivateView.goThroughNav(driver,"id","trayectos","text","Mis trayectos");
         List<WebElement> rows = driver.findElements(By.xpath("//table/tbody/tr"));
 
         for (WebElement row : rows) {
@@ -730,6 +731,99 @@ class Sdi2425Entrega2TestApplicationTests {
 
         List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Transactional
+    public void PR035() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+        PO_LoginView.logOut(driver);                                 // LOGOUT
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+        PO_LoginView.logOut(driver);                                 // LOGOUT
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+
+        driver.get("http://localhost:8081/logs/list");
+
+        WebElement typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        Select select = new Select(typeDropdown);
+        select.selectByVisibleText("PET");
+        WebElement filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        List<WebElement> employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertFalse(employeeRows.isEmpty());
+
+        typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGIN-EX");
+
+
+        filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(3, employeeRows.size());
+
+
+        typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGIN-ERR");
+
+        filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(2, employeeRows.size());
+
+
+        typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGOUT");
+
+        filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+        employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(2, employeeRows.size());
+    }
+
+    @Test
+    @Transactional
+    public void PR036() {
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");         // LOGIN_ERR
+
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r"); // LOGIN-EX
+
+        driver.get("http://localhost:8081/logs/list");
+
+
+        WebElement typeDropdown = driver.findElement(By.id("logTypeFilter"));
+        Select select = new Select(typeDropdown);
+        select.selectByVisibleText("LOGIN-ERR");
+
+
+        WebElement filterButton = driver.findElement(By.id("filterButton"));
+        filterButton.click();
+
+
+        List<WebElement> employeeRows = driver.findElements(By.xpath("//*[@id=\"logsTable\"]/tbody/tr"));
+        assertEquals(2, employeeRows.size());
+
+
+        WebElement deleteButton = driver.findElement(By.xpath("//button[contains(@class, 'btn-danger')]"));
+        deleteButton.click();
+
+
+        try {
+            typeDropdown = driver.findElement(By.id("logTypeFilter"));
+            select = new Select(typeDropdown);
+            select.selectByVisibleText("LOGIN-ERR"); // Esto debería fallar
+            fail("Se esperaba que se lanzara una excepción al seleccionar 'LOGIN-ERR', pero no ocurrió.");
+        } catch (Exception e) {
+            assertTrue(true); //si se produce la excepción pasa el test
+        }
+
     }
 
     @Test
@@ -880,6 +974,91 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(403, response.getStatusCode());
     }
 */
+
+
+    @Test
+    @Order(44)
+    public void PR044() {
+        JSONObject loginCredentials = new JSONObject();
+        loginCredentials.put("dni", "10000001S");
+        loginCredentials.put("password", "Us3r@1-PASSW");
+
+        Response loginResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+
+
+        assertEquals(200, loginResponse.getStatusCode());
+        String token = loginResponse.jsonPath().getString("token");
+        assertNotNull(token);
+        assertFalse(token.isEmpty());
+    }
+
+
+    @Test
+    @Order(45)
+    public void PR045() {
+        JSONObject loginCredentials = new JSONObject();
+        loginCredentials.put("dni", "10000001S");
+        loginCredentials.put("password", "ContraseñaIncorrecta123!");
+
+        Response loginResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(loginCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+
+        assertEquals(401, loginResponse.getStatusCode());
+
+
+        String errorMessage = loginResponse.jsonPath().getString("message");
+        assertNotNull(errorMessage);
+        assertTrue(errorMessage.contains("no autorizado"));
+    }
+
+    @Test
+    @Order(46)
+    public void PR046() {
+        // Caso 1: Username vacío
+        JSONObject emptyUsernameCredentials = new JSONObject();
+        emptyUsernameCredentials.put("dni", "");
+        emptyUsernameCredentials.put("password", "Us3r@1-PASSW");
+
+        Response emptyUsernameResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(emptyUsernameCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+
+        assertEquals(400, emptyUsernameResponse.getStatusCode());
+
+        // Caso 2: Contraseña vacía
+        JSONObject emptyPasswordCredentials = new JSONObject();
+        emptyPasswordCredentials.put("dni", "10000001S");
+        emptyPasswordCredentials.put("password", "");
+
+        Response emptyPasswordResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(emptyPasswordCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+        assertEquals(400, emptyPasswordResponse.getStatusCode());
+
+        // Caso 3: Ambos campos vacíos
+        JSONObject emptyCredentials = new JSONObject();
+        emptyCredentials.put("dni", "");
+        emptyCredentials.put("password", "");
+
+        Response emptyCredentialsResponse = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(emptyCredentials.toString())
+                .when()
+                .post("http://localhost:8081/api/v1.0/users/login");
+        assertEquals(400, emptyCredentialsResponse.getStatusCode());
+    }
+
     @Test
     @Order(45)
     public void PR047() {
@@ -968,9 +1147,44 @@ class Sdi2425Entrega2TestApplicationTests {
         List<Object> journeys = journeysResponse.jsonPath().getList("");
         assertNotNull(journeys);
 
-        assertEquals(193, journeys.size());
+        assertEquals(147, journeys.size());
     }
 
+    @Test
+    @Order(57)
+    public void PR057() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "@Dm1n1str@D0r");
+        String checkText = "Lista de vehículos disponibles";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(58)
+    public void PR058() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "");
+        String checkText = "Error en inicio de sesión";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+
+    @Test
+    @Order(59)
+    public void PR059() {
+        List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
+        elements.get(0).click();
+
+        PO_LoginView.fillForm(driver, "12345678Z", "admin");
+        String checkText = "Error en inicio de sesión";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
 
     @Test
     @Order(60)
@@ -1044,7 +1258,9 @@ class Sdi2425Entrega2TestApplicationTests {
         int totalCount = journeyRows.size();
 
         // Este número cambiará cuando redistribuyamos los trayectos
-        Assertions.assertEquals(193, totalCount, "El número de vehículos no coincide.");
+        Assertions.assertEquals(147, totalCount, "El número de vehículos no coincide.");
     }
+
+
 }
 
