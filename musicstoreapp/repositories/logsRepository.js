@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 module.exports = {
     dbClient: null,
     app: null,
@@ -33,8 +34,7 @@ module.exports = {
             const database = this.dbClient.db(this.database);
             const logsCollection = database.collection(this.collectionName);
             const cursor = logsCollection.find({});
-            const logs = await cursor.toArray();
-            return logs;
+            return await cursor.toArray();
         } catch (error) {
             throw error;
         }
@@ -45,8 +45,7 @@ module.exports = {
             const database = this.dbClient.db(this.database);
             const logsCollection = database.collection(this.collectionName);
             const cursor = logsCollection.find({ type: type });
-            const logs = await cursor.toArray();
-            return logs;
+            return await cursor.toArray();
         } catch (error) {
             throw error;
         }

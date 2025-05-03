@@ -1,15 +1,43 @@
-const {ObjectId} = require("mongodb");
+const { ObjectId } = require("mongodb");
+const { getPaginationPages } = require('./journeys');
+
 module.exports = function (app, usersRepository, logs) {
+
+  function isValidDNI(dni) {
+    if (!dni || dni.length !== 9) return false;
+
+    const numberPart = dni.substring(0, 8);
+    const letterPart = dni.charAt(8).toUpperCase();
+
+    // Validar que los 8 primeros caracteres sean números
+    if (!/^\d{8}$/.test(numberPart)) return false;
+
+    const number = parseInt(numberPart, 10);
+    const letters = "TRWAGMYFPDXBNJZSQVHLCKE";
+    const correctLetter = letters.charAt(number % 23);
+
+    return letterPart === correctLetter;
+  }
+
   app.get('/users', function (req, res) {
     res.send('lista de usuarios');
-  })
+  });
+
+
   app.get('/users/signup', function (req, res) {
-    res.render("signup.twig");
-  })
+    res.render("signup.twig", {
+      user: {
+        logged: !!req.session.user,
+        role: req.session.role,
+        dni: req.session.user,
+        name: req.session.name,
+        lastName: req.session.lastName
+      }
+    });
+  });
+
   app.post('/users/signup', function (req, res) {
-
     const errors = {};
-
 
     if (!req.body.name || req.body.name.trim() === '') {
       errors.name = 'El nombre no puede estar vacío';
@@ -19,61 +47,43 @@ module.exports = function (app, usersRepository, logs) {
       errors.lastName = 'El apellido no puede estar vacío';
     }
 
-
     const dni = req.body.dni;
-
 
     if (!dni || dni.trim() === '') {
       errors.dni = 'El DNI no puede estar vacío';
-    } else {
-
-      if (dni.length !== 9) {
-        errors.dni = "Formato dni invalido";
-      } else {
-
-        const numberPart = dni.substring(0, 8);
-        let numberPartValid = true;
-
-        for (let i = 0; i < numberPart.length; i++) {
-          if (isNaN(parseInt(numberPart[i]))) {
-            numberPartValid = false;
-            break;
-          }
-        }
-
-        if (!numberPartValid) {
-          errors.dni = "Formato dni invalido";
-        } else {
-
-          const lastChar = dni.charAt(dni.length - 1);
-          const number = parseInt(numberPart);
-          const letters = "TRWAGMYFPDXBNJZSQVHLCKE";
-
-          if (isNaN(lastChar) === false || lastChar !== letters.charAt(number % 23)) {
-            errors.dni = "Formato dni invalido";
-          }
-        }
-      }
+    } else if (!isValidDNI(dni)) {
+      errors.dni = "Formato dni invalido";
     }
-
 
     if (Object.keys(errors).length > 0) {
       return res.render("signup.twig", {
         errors: errors,
-        user: req.body
+        user: {
+          ...req.body,
+          logged: !!req.session.user,
+          role: req.session.role,
+          dni: req.session.user ? req.session.user : req.body.dni,
+          name: req.session.name ? req.session.name : req.body.name,
+          lastName: req.session.lastName ? req.session.lastName : req.body.lastName
+        }
       });
     }
 
-
-    usersRepository.findUser({dni: dni}, {}).then(existingUser => {
+    usersRepository.findUser({ dni: dni }, {}).then(existingUser => {
       if (existingUser) {
         errors.dni = "Este DNI ya está registrado";
         return res.render("signup.twig", {
           errors: errors,
-          user: req.body
+          user: {
+            ...req.body,
+            logged: !!req.session.user,
+            role: req.session.role,
+            dni: req.session.user ? req.session.user : req.body.dni,
+            name: req.session.name ? req.session.name : req.body.name,
+            lastName: req.session.lastName ? req.session.lastName : req.body.lastName
+          }
         });
       }
-
 
       let password = generarContrasena(12);
       let securePassword = app.get("crypto").createHmac('sha256', app.get('clave'))
@@ -84,15 +94,16 @@ module.exports = function (app, usersRepository, logs) {
         lastName: req.body.lastName,
         password: securePassword,
         role: "EMPLOYEE"
-      }
-      usersRepository.insertUser(user).then(async userId => {
+      };
+
+      usersRepository.insertUser(user).then(async () => {
         await logs.logSignup(user);
         res.redirect("/employee/list" +
             "?message=Nuevo usuario registrado. Password: " + password +
             "&messageType=alert-info ");
       }).catch(error => {
         res.redirect("error" +
-            "?message=Error al registrar al usuario"
+            "?message=Error al registrar al usuario" + error.message
         );
       });
     }).catch(error => {
@@ -107,10 +118,10 @@ module.exports = function (app, usersRepository, logs) {
       res.redirect("/journeys/list");
     } else {
       const logout = req.query.logout === "true";
-
       res.render("login.twig", { logout: logout });
     }
   });
+
   app.post('/users/login', function (req, res) {
     let securePassword = app.get('crypto').createHmac('sha256', app.get('clave'))
         .update(req.body.password).digest('hex');
@@ -133,25 +144,24 @@ module.exports = function (app, usersRepository, logs) {
         req.session.role = user.role;
         req.session.userId = user._id;
         await logs.logLoginEx(req.session.user);
-        if(user.role == "ADMIN"){
+        if (user.role === "ADMIN") {
           res.redirect("/employee/list");
-        }
-        else{
+        } else {
           res.redirect("/journeys/list");
         }
-
       }
     }).catch(error => {
       req.session.user = null;
       req.session.name = null;
       req.session.lastName = null;
-      req.session.role = null
+      req.session.role = null;
       req.session.userId = null;
       res.redirect("error" +
-          "?message=Error al iniciar sesion"
+          "?message=Error al iniciar sesion" + error.message
       );
     });
   });
+
   app.get('/users/logout', async function (req, res) {
     await logs.logLogout(req.session.user);
 
@@ -172,22 +182,12 @@ module.exports = function (app, usersRepository, logs) {
     });
   });
 
-  app.get('/employee/list', async function(req, res) {
+  app.get('/employee/list', async function (req, res) {
     let page = parseInt(req.query.page) || 1;
     try {
       const result = await usersRepository.getUsersPaginated(page);
 
-      let lastPage = Math.ceil(result.total / 5);
-      if (result.total % 5 === 0 && result.total > 0) {
-        lastPage = result.total / 5;
-      }
-
-      let pages = [];
-      for (let i = page - 2; i <= page + 2; i++) {
-        if (i > 0 && i <= lastPage) {
-          pages.push(i);
-        }
-      }
+      const { pages } = getPaginationPages(result.total, page);
 
       res.render("users/list.twig", {
         employees: result.users,
@@ -196,7 +196,7 @@ module.exports = function (app, usersRepository, logs) {
       });
     } catch (error) {
       res.render("users/list.twig", {
-        errors: {error: "Se ha producido un error al listar los empleados: " + error.message}
+        errors: { error: "Se ha producido un error al listar los empleados: " + error.message }
       });
     }
   });
@@ -231,14 +231,10 @@ module.exports = function (app, usersRepository, logs) {
     if (!updatedEmployee.dni || updatedEmployee.dni.trim() === '') {
       errors.dni = 'El DNI no puede estar vacío';
     } else {
-      // Validación del DNI
       const dni = updatedEmployee.dni;
-
-      // Validar longitud del DNI
       if (dni.length !== 9) {
         errors.dni = "Formato dni invalido";
       } else {
-        // Validar que los primeros 8 caracteres sean números
         const numberPart = dni.substring(0, 8);
         let numberPartValid = true;
 
@@ -257,7 +253,7 @@ module.exports = function (app, usersRepository, logs) {
           const number = parseInt(numberPart);
           const letters = "TRWAGMYFPDXBNJZSQVHLCKE";
 
-          if (isNaN(lastChar) === false || lastChar !== letters.charAt(number % 23)) {
+          if (!isNaN(Number(lastChar)) || lastChar !== letters.charAt(number % 23)) {
             errors.dni = "Formato dni invalido";
           }
         }
@@ -312,7 +308,6 @@ module.exports = function (app, usersRepository, logs) {
     }
   });
 
-
   function generarContrasena(longitud = 12) {
     const mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const minusculas = "abcdefghijklmnopqrstuvwxyz";
@@ -320,7 +315,6 @@ module.exports = function (app, usersRepository, logs) {
     const especiales = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
     const todo = mayusculas + minusculas + numeros + especiales;
-
 
     let contrasena = "";
     contrasena += mayusculas[Math.floor(Math.random() * mayusculas.length)];
@@ -336,4 +330,4 @@ module.exports = function (app, usersRepository, logs) {
     return contrasena;
   }
 
-}
+};

@@ -12,8 +12,7 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const usersCollection = database.collection(this.collectionName);
-            const user = await usersCollection.findOne(filter, options);
-            return user;
+            return await usersCollection.findOne(filter, options);
         } catch (error) {
             throw (error);
         }
@@ -56,12 +55,10 @@ module.exports = {
             const {ObjectId} = require('mongodb');
             const userId = typeof id === 'string' ? new ObjectId(id) : id;
 
-            const result = await usersCollection.updateOne(
+            return await usersCollection.updateOne(
                 {_id: userId},
                 {$set: updatedUser}
             );
-
-            return result;
         } catch (error) {
             throw (error);
         }
@@ -78,8 +75,7 @@ module.exports = {
                 _id: { $ne: excludeUserId }
             };
 
-            const user = await usersCollection.findOne(filter);
-            return user;
+            return await usersCollection.findOne(filter);
         } catch (error) {
             throw (error);
         }

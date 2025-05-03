@@ -1,4 +1,4 @@
-const {ObjectId} = require("mongodb");
+
 module.exports = function (app,usersRepository) {
     app.post('/api/v1.0/users/login', function (req, res) {
         try {
@@ -38,7 +38,7 @@ module.exports = function (app,usersRepository) {
                 }).catch(error => {
                     res.status(401);
                     res.json({
-                        message: "Se ha producido un error al verificar credenciales",
+                        message: "Se ha producido un error al verificar credenciales: " +error.message,
                         authenticated: false
                     })
                 })

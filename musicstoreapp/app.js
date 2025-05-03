@@ -1,10 +1,10 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
+const indexRouter = require('./routes/index');
 
 
 let app = express();
@@ -85,10 +85,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 const usersRepository = require("./repositories/usersRepository.js");
-let vehiclesRepository = require("./repositories/vehiclesRepository.js")
-let journeysRepository = require("./repositories/journeysRepository.js")
+const vehiclesRepository = require("./repositories/vehiclesRepository.js")
+const journeysRepository = require("./repositories/journeysRepository.js")
 journeysRepository.init(app,dbClient);
-let refuelsRepository = require("./repositories/refuelsRepository.js");
+const refuelsRepository = require("./repositories/refuelsRepository.js");
 refuelsRepository.init(app,dbClient);
 vehiclesRepository.init(app, dbClient);
 journeysRepository.init(app,dbClient);
@@ -120,7 +120,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   // set locals, only providing error in development
   console.log("Se ha producido un error"+err)
   res.locals.message = err.message;

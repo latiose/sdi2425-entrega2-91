@@ -2,6 +2,21 @@ const { ObjectId } = require('mongodb');
 
 module.exports = function(app, journeysRepository, vehiclesRepository,usersRepository) {
 
+    function getPaginationPages(total, currentPage, itemsPerPage = 5) {
+        let lastPage = Math.ceil(total / itemsPerPage);
+        if (total % itemsPerPage === 0 && total > 0) {
+            lastPage = total / itemsPerPage;
+        }
+
+        const pages = [];
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+            if (i > 0 && i <= lastPage) {
+                pages.push(i);
+            }
+        }
+        return { pages, lastPage };
+    }
+
     app.get('/journeys/add', async function(req, res) {
         try {
             const vehicles = await vehiclesRepository.getAllVehicles();
@@ -168,16 +183,7 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
             let filter = { employeeId: new ObjectId(employeeId) };
             let page = parseInt(req.query.page) || 1;
             journeysRepository.getJourneysPaginated(filter, {}, page).then(result => {
-                let lastPage = Math.ceil(result.total / 5);
-                if (result.total % 5 === 0 && result.total > 0) {
-                    lastPage = result.total / 5;
-                }
-                let pages = [];
-                for (let i = page - 1; i <= page + 1; i++) {
-                    if (i > 0 && i <= lastPage) {
-                        pages.push(i);
-                    }
-                }
+                const { pages } = getPaginationPages(result.total, page);
                 res.render('journeys/list.twig', {
                     journeys: result.journeys,
                     pages,
@@ -240,4 +246,5 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
             });
         }
     });
+    module.exports = { getPaginationPages };
 };

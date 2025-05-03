@@ -109,8 +109,7 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const vehicleCollection = database.collection(this.collectionName);
-            const result = await vehicleCollection.updateOne(filter, update, options);
-            return result;
+            return await vehicleCollection.updateOne(filter, update, options);
         } catch (error) {
             throw error;
         }

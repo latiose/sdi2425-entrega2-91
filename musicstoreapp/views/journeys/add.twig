@@ -26,9 +26,6 @@
                         <option value="{{ vehicle.numberPlate }}">{{ vehicle.numberPlate }} - {{ vehicle.brand }} {{ vehicle.model }}</option>
                     {% endfor %}
                 </select>
-                {% if errors.numberPlate %}
-                    <div class="text-danger">{{ errors.numberPlate }}</div>
-                {% endif %}
             </div>
         </div>
 

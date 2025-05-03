@@ -36,7 +36,7 @@ module.exports = function(app, vehiclesRepository, journeyRepository,usersReposi
             errors.spaces = "Los campos no deben contener espacios al principio o al final";
         }
 
-        const numberPlateRegex = /^[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$|^[O][0-9]{4}[A-Z]{2}$/;
+        const numberPlateRegex = /^[0-9]{4}[BCDFGHJKLMNPRSTVWXYZ]{3}$|^O[0-9]{4}[A-Z]{2}$/;
         if (!numberPlateRegex.test(vehicle.numberPlate)) {
             errors.numberPlate = 'Formato de matrícula inválido: La matrícula debe de seguir un formato válido Español';
         }

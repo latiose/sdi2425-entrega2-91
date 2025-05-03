@@ -5,8 +5,8 @@
  * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
  * Released under the MIT license
  */
-;(function (factory) {
-	var registeredInModuleLoader = false;
+(function (factory) {
+	let registeredInModuleLoader = false;
 	if (typeof define === 'function' && define.amd) {
 		define(factory);
 		registeredInModuleLoader = true;
@@ -16,8 +16,8 @@
 		registeredInModuleLoader = true;
 	}
 	if (!registeredInModuleLoader) {
-		var OldCookies = window.Cookies;
-		var api = window.Cookies = factory();
+		let OldCookies = window.Cookies;
+		let api = window.Cookies = factory();
 		api.noConflict = function () {
 			window.Cookies = OldCookies;
 			return api;
@@ -25,11 +25,11 @@
 	}
 }(function () {
 	function extend () {
-		var i = 0;
-		var result = {};
+		let i = 0;
+		let result = {};
 		for (; i < arguments.length; i++) {
-			var attributes = arguments[ i ];
-			for (var key in attributes) {
+			let attributes = arguments[ i ];
+			for (let key in attributes) {
 				result[key] = attributes[key];
 			}
 		}
@@ -38,7 +38,7 @@
 
 	function init (converter) {
 		function api (key, value, attributes) {
-			var result;
+			let result;
 			if (typeof document === 'undefined') {
 				return;
 			}
@@ -51,7 +51,7 @@
 				}, api.defaults, attributes);
 
 				if (typeof attributes.expires === 'number') {
-					var expires = new Date();
+					let expires = new Date();
 					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
 					attributes.expires = expires;
 				}
@@ -61,7 +61,7 @@
 
 				try {
 					result = JSON.stringify(value);
-					if (/^[\{\[]/.test(result)) {
+					if (/^[{\[]/.test(result)) {
 						value = result;
 					}
 				} catch (e) {}
@@ -75,11 +75,11 @@
 
 				key = encodeURIComponent(String(key));
 				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
-				key = key.replace(/[\(\)]/g, escape);
+				key = key.replace(/[()]/g, escape);
 
-				var stringifiedAttributes = '';
+				let stringifiedAttributes = '';
 
-				for (var attributeName in attributes) {
+				for (let attributeName in attributes) {
 					if (!attributes[attributeName]) {
 						continue;
 					}
@@ -101,20 +101,20 @@
 			// To prevent the for loop in the first place assign an empty array
 			// in case there are no cookies at all. Also prevents odd result when
 			// calling "get()"
-			var cookies = document.cookie ? document.cookie.split('; ') : [];
-			var rdecode = /(%[0-9A-Z]{2})+/g;
-			var i = 0;
+			let cookies = document.cookie ? document.cookie.split('; ') : [];
+			let rdecode = /(%[0-9A-Z]{2})+/g;
+			let i = 0;
 
 			for (; i < cookies.length; i++) {
-				var parts = cookies[i].split('=');
-				var cookie = parts.slice(1).join('=');
+				let parts = cookies[i].split('=');
+				let cookie = parts.slice(1).join('=');
 
 				if (cookie.charAt(0) === '"') {
 					cookie = cookie.slice(1, -1);
 				}
 
 				try {
-					var name = parts[0].replace(rdecode, decodeURIComponent);
+					let name = parts[0].replace(rdecode, decodeURIComponent);
 					cookie = converter.read ?
 						converter.read(cookie, name) : converter(cookie, name) ||
 						cookie.replace(rdecode, decodeURIComponent);

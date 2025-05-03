@@ -932,7 +932,7 @@ module.exports = async function initializeDatabase(client) {
             startDate.setDate(startDate.getDate() - daysAgo);
             startDate.setHours(hoursOffset % 24, (i * 6) % 60, 0);
 
-            const duration = (0.5 + (i % 5) * 0.5).toFixed(2);
+            const duration = +(0.5 + (i % 5) * 0.5).toFixed(2);
 
             const endDate = new Date(startDate);
             const durationHours = Math.floor(duration);
@@ -942,7 +942,7 @@ module.exports = async function initializeDatabase(client) {
             journeyTemplates.push({
                 startDate,
                 endDate,
-                duration: parseFloat(duration)
+                duration: duration
             });
         }
 

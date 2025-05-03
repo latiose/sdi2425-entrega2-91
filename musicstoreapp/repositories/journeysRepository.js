@@ -27,14 +27,13 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const journeysCollection = database.collection(this.collectionName);
-            const journey = await journeysCollection.findOne(filter, options);
-            return journey;
+            return await journeysCollection.findOne(filter, options);
         } catch (error) {
             throw (error);
         }
     },
 
-    getAllJourneys: async function(filter, options) {
+    getAllJourneys: async function(filter) {
         try {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
@@ -96,8 +95,7 @@ module.exports = {
             const journeysCollectionCount = await journeysCollection.countDocuments(filter);
             const cursor = journeysCollection.find(filter, options).skip((page - 1) * limit).limit(limit)
             const journeys = await cursor.toArray();
-            const result = {journeys: journeys, total: journeysCollectionCount};
-            return result;
+            return {journeys: journeys, total: journeysCollectionCount};
         } catch (error) {
             throw (error);
         }

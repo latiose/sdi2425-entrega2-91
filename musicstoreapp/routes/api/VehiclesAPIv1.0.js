@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+
 
 module.exports = function (app, vehiclesRepository, usersRepository) {
     app.get('/api/v1.0/vehicles/list', async (req, res) => {

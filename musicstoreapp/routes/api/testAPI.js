@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+
 const initializeDatabase = require('../../config/initDatabase');
 
 module.exports = function (app, client) {
