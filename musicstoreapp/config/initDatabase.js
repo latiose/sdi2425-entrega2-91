@@ -12,6 +12,9 @@ module.exports = async function initializeDatabase(client) {
         const usersCollection = db.collection("users");
         await usersCollection.deleteMany({});
 
+        const refuelsCollection = db.collection("refuels");
+        await refuelsCollection.deleteMany({});
+
         const clave = "abcdefg";
         const letrasDni = "TRWAGMYFPDXBNJZSQVHLCKE";
 
@@ -1009,6 +1012,105 @@ module.exports = async function initializeDatabase(client) {
 
         if (newJourneys.length > 0) {
             await journeysCollection.insertMany(newJourneys);
+        }
+
+        const vehicleId = new ObjectId("67f78bfbeb4480ef31b369f4");  // 1234BCD
+
+        const vehicleJourneys = await journeysCollection.find({
+            vehicleId: vehicleId
+        }).sort({ startDate: 1 }).toArray();
+
+        if (vehicleJourneys.length === 0) {
+            console.log("No journeys found for vehicle 1234BCD");
+            return;
+        }
+
+        const refuels = [];
+
+        const stations = [
+            "Repsol", "Cepsa", "BP", "Shell", "Galp",
+            "Petronor", "Avia", "Campsa", "Q8", "Disa"
+        ];
+
+        for (let i = 0; i < vehicleJourneys.length; i++) {
+            const journey = vehicleJourneys[i];
+
+            if (!journey.endDate || !journey.odometerEnd) continue;
+
+            const stationName = stations[Math.floor(Math.random() * stations.length)];
+
+            const amount = (Math.random() * 30 + 20).toFixed(2);
+
+            const price = (Math.random() * 0.5 + 1.3).toFixed(2);
+
+            const fullTank = Math.random() > 0.2;
+
+            const odometerOffset = journey.odometerEnd - journey.odometerStart;
+            const refuelPoint = Math.floor(Math.random() * odometerOffset * 0.8) + journey.odometerStart;
+            const odometer = refuelPoint.toString();
+
+            const commentOptions = [
+                "",
+                "Aceite bajo",
+                "Presión neumáticos correcta",
+                "Limpieza incluida",
+                "Aire acondicionado revisado"
+            ];
+            const comments = commentOptions[Math.floor(Math.random() * commentOptions.length)];
+
+            const journeyDuration = journey.endDate - journey.startDate;
+            const refuelTime = new Date(journey.startDate.getTime() + journeyDuration * Math.random());
+
+            const refuel = {
+                stationName,
+                amount,
+                price,
+                fullTank,
+                odometer,
+                comments,
+                date: refuelTime,
+                journeyId: journey._id,
+                vehicleId: journey.vehicleId
+            };
+
+            refuels.push(refuel);
+        }
+
+        const ongoingJourney = await journeysCollection.findOne({
+            vehicleId: vehicleId,
+            endDate: { $exists: false }
+        });
+
+        if (ongoingJourney) {
+            const stationName = stations[Math.floor(Math.random() * stations.length)];
+            const amount = (Math.random() * 30 + 20).toFixed(2);
+            const price = (Math.random() * 0.5 + 1.3).toFixed(2);
+            const fullTank = true;
+
+            const odometer = (ongoingJourney.odometerStart + Math.floor(Math.random() * 50 + 10)).toString();
+
+            const comments = "Repostaje durante trayecto en curso";
+
+            const refuel = {
+                stationName,
+                amount,
+                price,
+                fullTank,
+                odometer,
+                comments,
+                date: new Date(),
+                journeyId: ongoingJourney._id,
+                vehicleId: ongoingJourney.vehicleId
+            };
+
+            refuels.push(refuel);
+        }
+
+        if (refuels.length > 0) {
+            await refuelsCollection.insertMany(refuels);
+            console.log(`Added ${refuels.length} refuels for vehicle 1234BCD`);
+        } else {
+            console.log("No refuels created");
         }
 
 
