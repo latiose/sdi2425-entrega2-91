@@ -214,17 +214,17 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
                 let page = parseInt(req.query.page) || 1;
 
                 const result = await journeysRepository.getJourneysPaginated(filter, {}, page);
-            let lastPage = Math.ceil(result.total / 5);
-            if (result.total % 5 === 0 && result.total > 0) {
-                lastPage = result.total / 5;
-            }
-
-            let pages = [];
-            for (let i = page - 1; i <= page + 1; i++) {
-                if (i > 0 && i <= lastPage) {
-                    pages.push(i);
+                let lastPage = Math.ceil(result.total / 5);
+                if (result.total % 5 === 0 && result.total > 0) {
+                    lastPage = result.total / 5;
                 }
-            }
+
+                let pages = [];
+                for (let i = page - 1; i <= page + 1; i++) {
+                    if (i > 0 && i <= lastPage) {
+                        pages.push(i);
+                    }
+                }
 
                 res.render('journeys/vehicle.twig', {
                     vehicles: vehicles,

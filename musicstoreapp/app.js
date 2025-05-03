@@ -94,7 +94,7 @@ vehiclesRepository.init(app, dbClient);
 journeysRepository.init(app,dbClient);
 usersRepository.init(app, dbClient);
 
-require("./routes/refuels.js")(app, refuelsRepository, journeysRepository);
+require("./routes/refuels.js")(app, refuelsRepository, journeysRepository, vehiclesRepository);
 require("./routes/vehicles.js")(app, vehiclesRepository, journeysRepository, usersRepository);
 require("./routes/journeys.js")(app,journeysRepository,vehiclesRepository,usersRepository);
 require("./routes/api/UserAPIv1.0.js")(app,usersRepository);
