@@ -3,37 +3,34 @@
 {% block title %} Lista de Logs {% endblock %}
 
 {% block main_container %}
-    <div class="container" id="main-container">
+    <div class="container">
         <h2>Registros de logs</h2>
-
         <div class="row">
             <div class="col-md-6">
-                <form method="get" action="/logs/list" class="form-inline">
+                <form method="get" action="/logs/list">
                     <div class="form-group">
-                        <label for="type">Filtrar por tipo:</label>
-                        <select id="type" name="type" class="form-control ml-2">
-                            <option value="all" {% if selectedType == "all" %}selected{% endif %}>Todos</option>
+                        <label for="logTypeFilter">Filtrar por tipo:</label>
+                        <select id="logTypeFilter" name="type" class="form-control">
+                            <option value="all">Todos</option>
                             {% for type in logTypes %}
                                 <option value="{{ type }}" {% if selectedType == type %}selected{% endif %}>{{ type }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary ml-2">Filtrar</button>
+                    <button type="submit" id="filterButton" class="btn btn-primary">Filtrar</button>
                 </form>
             </div>
-
             {% if selectedType and selectedType != "all" %}
-                <div class="col-md-6 text-right">
-                    <form method="post" action="/logs/delete" onsubmit="return confirm('¿Estás seguro de querer eliminar todos los logs de tipo {{ selectedType }}?');">
+                <div class="col-md-6">
+                    <form method="post" action="/logs/delete">
                         <input type="hidden" name="type" value="{{ selectedType }}">
                         <button type="submit" class="btn btn-danger">Eliminar logs de tipo "{{ selectedType }}"</button>
                     </form>
                 </div>
             {% endif %}
         </div>
-
-        <div class="table-responsive mt-4">
-            <table class="table table-hover">
+        <div class="table-responsive">
+            <table class="table table-hover" id="logsTable">
                 <thead>
                 <tr>
                     <th>Tipo</th>
@@ -52,7 +49,7 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="3" class="text-center">No se encontraron registros de logs</td>
+                        <td colspan="3">No se encontraron registros de logs</td>
                     </tr>
                 {% endif %}
                 </tbody>

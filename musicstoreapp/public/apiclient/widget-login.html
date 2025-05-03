@@ -3,14 +3,14 @@
     <label class="control-label col-sm-2" for="dni">Dni:</label>
     <div class="col-sm-10">
       <input type="email" class="form-control" name="dni"
-             placeholder="12345678Z" id="dni" />
+             placeholder="12345678Z" id="dni" required/>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="password">Password:</label>
     <div class="col-sm-10">
       <input type="password" class="form-control" name="password"
-             placeholder="contraseña" id="password"/>
+             placeholder="contraseña" id="password" required/>
     </div>
   </div>
   <div class="form-group">
@@ -39,9 +39,10 @@
       },
       error: function(error) {
         Cookies.remove('token');
-        $("#widget-login")
-                .prepend("<div class='alert alert-danger'>Usuario no encontrado</div>");
-      }
+          $("#widget-login")
+                  .prepend("<div class='alert alert-danger'>Error en inicio de sesión</div>");
+
+        }
     });
   });
 </script>
