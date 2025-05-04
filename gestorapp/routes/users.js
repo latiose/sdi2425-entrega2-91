@@ -203,8 +203,16 @@ module.exports = function (app, usersRepository, logs) {
 
   app.get('/employee/edit/:id', async (req, res) => {
     let filter = { _id: new ObjectId(req.params.id) };
+    let dni = req.session.user;
     usersRepository.findUser(filter, {}).then(employee => {
-      res.render("users/edit.twig", { employee: employee });
+      let self;
+      if(req.session.user == employee.dni){
+        self = true;
+      }
+      else{
+        self = false;
+      }
+      res.render("users/edit.twig", { employee: employee, self: self });
     }).catch(error => {
       res.send("Se ha producido un error al recuperar el empleado " + error);
     });
