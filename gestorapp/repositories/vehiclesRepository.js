@@ -107,7 +107,6 @@ module.exports = {
             throw error;
         }
     },
-
     getFilteredVehicles: async function(filter) {
         try {
             await this.dbClient.connect();
