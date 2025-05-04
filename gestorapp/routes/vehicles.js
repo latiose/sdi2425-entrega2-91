@@ -95,13 +95,12 @@ module.exports = function(app, vehiclesRepository, journeyRepository,usersReposi
         try {
             const user = await usersRepository.findUser({_id: new ObjectId(req.session.userId)},{});
             let result;
-            if(user.role==="ADMIN") {
-                result = await vehiclesRepository.getVehiclesPaginated(page);
+            let options = {sort: { numberPlate: 1}};
+            let filter = {};
+            if(user.role==="EMPLOYEE") {
+                filter = { status: "LIBRE"};
             }
-            else{
-                result = await vehiclesRepository.getVehiclesNotUsedPaginated(page);
-            }
-
+            result = await vehiclesRepository.getVehiclesPaginated(filter, options, page);
             let lastPage = Math.ceil(result.total / 5);
             if (result.total % 5 === 0 && result.total > 0) {
                 lastPage = result.total / 5;

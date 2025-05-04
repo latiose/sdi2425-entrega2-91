@@ -70,31 +70,14 @@ module.exports = {
         }
     },
 
-    getVehiclesPaginated: async function(page) {
+    getVehiclesPaginated: async function(filter, options, page) {
         try {
             const limit = 5;
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const vehiclesCollection = database.collection(this.collectionName);
-            const totalVehicles = await vehiclesCollection.countDocuments();
-            const cursor = vehiclesCollection.find({})
-                .skip((page - 1) * limit)
-                .limit(limit);
-            const vehicles = await cursor.toArray();
-            return { vehicles: vehicles, total: totalVehicles };
-        } catch (error) {
-            throw error;
-        }
-    },
-    getVehiclesNotUsedPaginated: async function(page) {
-        try {
-            const limit = 5;
-            await this.dbClient.connect();
-            const database = this.dbClient.db(this.database);
-            const vehiclesCollection = database.collection(this.collectionName);
-            const filter = { status: "LIBRE" };
             const totalVehicles = await vehiclesCollection.countDocuments(filter);
-            const cursor = vehiclesCollection.find(filter)
+            const cursor = vehiclesCollection.find(filter, options)
                 .skip((page - 1) * limit)
                 .limit(limit);
             const vehicles = await cursor.toArray();

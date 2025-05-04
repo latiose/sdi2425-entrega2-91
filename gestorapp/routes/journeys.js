@@ -182,7 +182,8 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
             const employeeId = req.session.userId;
             let filter = { employeeId: new ObjectId(employeeId) };
             let page = parseInt(req.query.page) || 1;
-            journeysRepository.getJourneysPaginated(filter, {}, page).then(result => {
+            let options = {sort: { startDate: -1}};
+            journeysRepository.getJourneysPaginated(filter, options, page).then(result => {
                 const { pages } = getPaginationPages(result.total, page);
                 res.render('journeys/list.twig', {
                     journeys: result.journeys,
@@ -218,8 +219,8 @@ module.exports = function(app, journeysRepository, vehiclesRepository,usersRepos
 
                 let filter = { vehicleId: new ObjectId(vehicleId) };
                 let page = parseInt(req.query.page) || 1;
-
-                const result = await journeysRepository.getJourneysPaginated(filter, {}, page);
+                let options = {sort: { startDate: -1}};
+                const result = await journeysRepository.getJourneysPaginated(filter, options, page);
                 let lastPage = Math.ceil(result.total / 5);
                 if (result.total % 5 === 0 && result.total > 0) {
                     lastPage = result.total / 5;

@@ -73,10 +73,10 @@
                             <td>{{ vehicle.model }}</td>
                             <td>{{ vehicle.mileage }} km</td>
                            <td>
-                               <a href="/journeys/vehicle/{{ vehicle._id }}" class="btn btn-sm btn-info">Ver trayectos del vehículo</a>
+                               <a href="/journeys/vehicle/{{ vehicle._id }}" class="btn btn-primary">Ver trayectos</a>
                            </td>
                             <td>
-                                <a href="/journeys/vehicle/{{ vehicle._id }}" class="btn btn-sm btn-info">Ver repostajes del vehículo</a>
+                                <a href="/refuels/vehicle/{{ vehicle._id }}" class="btn btn-primary">Ver repostajes</a>
                             </td>
                         </tr>
                     {% endfor %}
