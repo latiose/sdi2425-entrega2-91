@@ -33,7 +33,7 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const logsCollection = database.collection(this.collectionName);
-            const cursor = logsCollection.find({});
+            const cursor = logsCollection.find({}).sort({ timestamp: -1 });
             return await cursor.toArray();
         } catch (error) {
             throw error;
