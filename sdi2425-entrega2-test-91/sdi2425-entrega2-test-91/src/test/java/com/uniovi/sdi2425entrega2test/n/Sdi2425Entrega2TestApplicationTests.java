@@ -1266,7 +1266,6 @@ class Sdi2425Entrega2TestApplicationTests {
         List<WebElement> journeyRows = driver.findElements(By.xpath("//*[@id=\"journeysTableBody\"]/tr"));
         int totalCount = journeyRows.size();
 
-        // Este número cambiará cuando redistribuyamos los trayectos
         Assertions.assertEquals(147, totalCount, "El número de vehículos no coincide.");
 
         PO_LoginView.logOutAPI(driver);
