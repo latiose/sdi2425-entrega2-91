@@ -50,10 +50,8 @@
     let URLbase = "http://localhost:8081/api/v1.0";
 
     $(document).ready(function() {
-      // Comprobar si existe token al cargar la página
       checkAuthState();
 
-      // Cargar el widget apropiado
       loadInitialWidget();
 
       $(document).on('cookieUpdate', function() {
@@ -80,7 +78,6 @@
       $("#main-container").load("widget-vehicles-list.html");
       $(document).trigger('cookieUpdate');
     }
-
 
     function loadInitialWidget() {
         let url = new URL(window.location.href);

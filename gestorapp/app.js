@@ -15,7 +15,6 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, UPDATE, PUT");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type,Accept, token");
-  // Debemos especificar todas las headers que se aceptan. Content-Type , token
   next();
 });
 let jwt = require('jsonwebtoken');
@@ -26,12 +25,6 @@ app.use(expressSession({
   resave: true,
   saveUninitialized: true
 }));
-let fileUpload = require('express-fileupload');
-app.use(fileUpload({
-  limits: { fileSize: 50 * 1024 * 1024 },
-  createParentPath: true
-}));
-app.set('uploadPath', __dirname)
 
 let crypto = require('crypto');
 app.set('clave','abcdefg');
@@ -40,7 +33,6 @@ let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
 
@@ -63,8 +55,6 @@ const logs = require("./middlewares/logger.js")(app, logsRepository);
 app.use(logs.logRequest);
 
 const userSessionRouter = require('./routes/userSessionRouter');
-
-
 const userTokenRouter = require('./routes/userTokenRouter');
 
 app.use("/api/v1.0/journeys/", userTokenRouter);
@@ -101,7 +91,6 @@ require("./routes/api/userAPIv1.0.js")(app,usersRepository);
 require("./routes/api/journeysAPIv1.0.js")(app, journeysRepository,usersRepository,vehiclesRepository);
 require("./routes/api/vehiclesAPIv1.0.js")(app, vehiclesRepository,usersRepository);
 require("./routes/api/testAPI.js")(app, dbClient);
-usersRepository.init(app, dbClient);
 require("./routes/users.js")(app, usersRepository, logs);
 require("./routes/logs")(app, logsRepository);
 
@@ -114,19 +103,15 @@ require("./routes/logs")(app, logsRepository);
   }
 })();
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   console.log("Se ha producido un error"+err)
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
