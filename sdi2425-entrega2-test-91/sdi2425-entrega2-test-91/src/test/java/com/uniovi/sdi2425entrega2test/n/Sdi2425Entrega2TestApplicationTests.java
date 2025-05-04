@@ -51,21 +51,13 @@ class Sdi2425Entrega2TestApplicationTests {
         Assertions.assertEquals(200, response.getStatusCode(), "Database reset failed");
     }
 
-    //Después de cada prueba se borran las cookies del navegador
     @AfterEach
     public void tearDown() {
         driver.manage().deleteAllCookies();
     }
 
-    //Antes de la primera prueba
-    @BeforeAll
-    static public void begin() {
-    }
-
-    //Al finalizar la última prueba
     @AfterAll
     static public void end() {
-//Cerramos el navegador al finalizar las pruebas
         driver.quit();
     }
 

@@ -33,7 +33,7 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const logsCollection = database.collection(this.collectionName);
-            const cursor = logsCollection.find({}).sort({ timestamp: -1 });
+            const cursor = logsCollection.find({}, {sort: {timestamp: -1}});
             return await cursor.toArray();
         } catch (error) {
             throw error;
@@ -44,7 +44,7 @@ module.exports = {
             await this.dbClient.connect();
             const database = this.dbClient.db(this.database);
             const logsCollection = database.collection(this.collectionName);
-            const cursor = logsCollection.find({ type: type });
+            const cursor = logsCollection.find({ type: type }, {sort: {timestamp: -1}});
             return await cursor.toArray();
         } catch (error) {
             throw error;

@@ -4,7 +4,7 @@ const validFuelTypes = ['Gasolina', 'Diésel', 'Microhíbrido',
 
 const { ObjectId } = require('mongodb');
 
-module.exports = function(app, vehiclesRepository, journeyRepository,usersRepository) {
+module.exports = function(app, vehiclesRepository, journeyRepository, usersRepository, refuelsRepository) {
 
     app.get('/vehicles/add', function (req, res) {
         res.render("vehicles/add.twig", {
@@ -136,11 +136,11 @@ module.exports = function(app, vehiclesRepository, journeyRepository,usersReposi
 
             await journeyRepository.deleteMany({ vehicleId: { $in: vehicleIds } });
             await vehiclesRepository.deleteMany({ _id: { $in: vehicleIds }});
-
-            return res.redirect('/vehicles/list?message=Vehículos eliminados con éxito');
+            await refuelsRepository.deleteMany({ vehicleId: { $in: vehicleIds } });
+            return res.redirect('/vehicles/list?message=Vehículos eliminados con éxito&messageType=alert-info');
         } catch (error) {
             console.log("Error in delete operation:", error);
-            res.status(500).redirect('/vehicles/list?message=Error al eliminar los vehículos');
+            res.status(500).redirect('/vehicles/list?message=Error al eliminar los vehículos&messageType=alert-danger');
         }
     });
 

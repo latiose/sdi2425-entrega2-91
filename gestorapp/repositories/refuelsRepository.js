@@ -43,4 +43,14 @@ module.exports = {
             throw (error);
         }
     },
+    deleteMany: async function(filter) {
+        try {
+            await this.dbClient.connect();
+            const database = this.dbClient.db(this.database);
+            const refuelsCollection = database.collection(this.collectionName);
+            return await refuelsCollection.deleteMany(filter);
+        } catch(error) {
+            throw error;
+        }
+    },
 };
