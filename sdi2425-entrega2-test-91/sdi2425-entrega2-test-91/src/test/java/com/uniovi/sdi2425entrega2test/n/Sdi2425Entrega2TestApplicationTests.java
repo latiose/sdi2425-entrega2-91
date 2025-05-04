@@ -1217,6 +1217,7 @@ class Sdi2425Entrega2TestApplicationTests {
     public void PR061() {
         List<WebElement> elements = PO_View.checkElementBy(driver, "text", "Funcionalidades API");
         elements.get(0).click();
+
         PO_LoginView.fillForm(driver, "10000002Q", "Us3r@2-PASSW");
 
         WebElement button = driver.findElement(By.xpath("/html/body/div/div/table/tbody/tr[3]/td[8]/button"));

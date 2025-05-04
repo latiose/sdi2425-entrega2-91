@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 public class PO_LoginView extends PO_NavView {
@@ -27,18 +30,18 @@ public class PO_LoginView extends PO_NavView {
 		driver.findElement(boton).click();	
 	}
 
-	static public void fillForm(WebDriver driver, String dnip,  String
-			passwordp) {
-		WebElement dni = driver.findElement(By.name("dni"));
+	static public void fillForm(WebDriver driver, String dnip, String passwordp) {
+		WebDriverWait wait = new WebDriverWait(driver, 1);
+		WebElement dni = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("dni")));
 		dni.click();
 		dni.clear();
 		dni.sendKeys(dnip);
-		WebElement password = driver.findElement(By.name("password"));
+		WebElement password = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("password")));
 		password.click();
 		password.clear();
 		password.sendKeys(passwordp);
 		By boton = By.className("btn");
-		driver.findElement(boton).click();
+		wait.until(ExpectedConditions.elementToBeClickable(boton)).click();
 	}
 
 	static public void logOut(WebDriver driver){
