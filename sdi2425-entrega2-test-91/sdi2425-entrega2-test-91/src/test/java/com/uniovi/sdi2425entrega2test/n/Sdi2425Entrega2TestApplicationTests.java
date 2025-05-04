@@ -158,10 +158,21 @@ class Sdi2425Entrega2TestApplicationTests {
 
         driver.findElement(By.className("btn-primary")).click();
 
-        String checkText = "Este DNI ya está registrado";
+        String checkText = "El DNI no puede estar vacío";
 
         List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText);
         Assertions.assertEquals(checkText, result.get(0).getText());
+
+        checkText = "El nombre no puede estar vacío";
+
+        result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
+        checkText = "El apellido no puede estar vacío";
+
+        result = PO_View.checkElementBy(driver, "text", checkText);
+        Assertions.assertEquals(checkText, result.get(0).getText());
+
         String currentUrl = driver.getCurrentUrl();
         assertTrue(currentUrl.contains("/users/signup"));
 

@@ -9,7 +9,7 @@
       <label class="control-label col-sm-2" for="dni">Dni:</label>
       <div class="col-sm-10">
         <input id="dni" type="text" class="form-control" name="dni"
-               placeholder="12345678Q" required="true" value="{{ user.dni | default('') }}" />
+               placeholder="12345678Q"   />
         {% if errors and errors.dni %}
           <span class="text-danger">{{ errors.dni }}</span>
         {% endif %}
@@ -19,7 +19,7 @@
       <label class="control-label col-sm-2" for="name">Nombre:</label>
       <div class="col-sm-10">
         <input id="name" type="text" class="form-control" name="name"
-               placeholder="Nombre del empleado" required="true" value="{{ user.name | default('') }}" />
+               placeholder="Nombre del empleado"   />
         {% if errors and errors.name %}
           <span class="text-danger">{{ errors.name }}</span>
         {% endif %}
@@ -29,7 +29,7 @@
       <label class="control-label col-sm-2" for="lastName">Apellidos:</label>
       <div class="col-sm-10">
         <input id="lastName" type="text" class="form-control" name="lastName"
-               placeholder="Apellido del empleado" required="true" value="{{ user.lastName | default('') }}" />
+               placeholder="Apellido del empleado"  />
         {% if errors and errors.lastName %}
           <span class="text-danger">{{ errors.lastName }}</span>
         {% endif %}
